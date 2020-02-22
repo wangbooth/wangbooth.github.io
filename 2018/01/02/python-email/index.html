@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。 问题是什么把问题问清楚，是最基本的能力。 遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python_email">
+<meta property="og:url" content="http://blog.wangbaomi.com/2018/01/02/python-email/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。 问题是什么把问题问清楚，是最基本的能力。 遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/solution.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/email_list.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/email_detail.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/min_email.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/google.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/google2.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/google3.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/google4.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/google5.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/google6.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/gmail.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/send_ok1.png">
+<meta property="og:updated_time" content="2018-01-07T15:01:52.032Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python_email">
+<meta name="twitter:description" content="上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。 问题是什么把问题问清楚，是最基本的能力。 遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。">
+<meta name="twitter:image" content="http://blog.wangbaomi.com/2018/01/02/python-email/solution.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.wangbaomi.com/2018/01/02/python-email/"/>
+
+
+
+
+
+  <title>python_email | WangBooth's Logbook</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6052fc18aec60ff491343e23ffefe414";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WangBooth's Logbook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">王布斯的网络日志</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2018/01/02/python-email/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python_email</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-02T16:36:16+08:00">
+                2018-01-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/01/02/python-email/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/01/02/python-email/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="solution.png" alt=""></p>
+<p>上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。</p>
+<h1 id="问题是什么"><a href="#问题是什么" class="headerlink" title="问题是什么"></a>问题是什么</h1><p>把问题问清楚，是最基本的能力。</p>
+<p>遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。</p>
+<p>把问题写到纸上！</p>
+<h1 id="问题分解"><a href="#问题分解" class="headerlink" title="问题分解"></a>问题分解</h1><p>弄清楚问题的过程，也是问题分解的过程。</p>
+<p>一个大问题，要分步骤解，不要想着一口吞下去。把问题分解成一个个小问题，然后一一击破。</p>
+<p>把步骤写到纸上！</p>
+<h1 id="是否是大众问题"><a href="#是否是大众问题" class="headerlink" title="是否是大众问题"></a>是否是大众问题</h1><p>一个问题自己解决不了，我首先不是去想着去研究它的原理，而是这个问题是不是一种大众场景。我遇到的绝大多数问题，站在一个高手的角度看，都不是问题，也就是说我遇到的问题，都是别人已经解决过的问题了，最简单的办法就是拿来用！</p>
+<h1 id="别人是否已经解决了相关问题"><a href="#别人是否已经解决了相关问题" class="headerlink" title="别人是否已经解决了相关问题"></a>别人是否已经解决了相关问题</h1><p>这一步需要掌握搜索引擎的用法，一来要能访问Google，二来是问题关键字的提取。</p>
+<p>面向Google编程，就是这个意思…很多问题，只要熟练掌握上面两项技能，都能很快解决掉。</p>
+<h1 id="别人的办法能否完全解决你的问题"><a href="#别人的办法能否完全解决你的问题" class="headerlink" title="别人的办法能否完全解决你的问题"></a>别人的办法能否完全解决你的问题</h1><p>尝试！</p>
+<p>要多尝试，代码拷下来跑一遍看看。但不要指望代码拿过来就能用，一定要大概弄清楚代码的意思再运行，然后稍作改动，一般就能解决问题了。</p>
+<h1 id="如果是小众问题呢"><a href="#如果是小众问题呢" class="headerlink" title="如果是小众问题呢"></a>如果是小众问题呢</h1><p>小众问题，比如一款很小众的软件出了问题，这款人家很少有人用，这样就很难查到解决方法了。不管怎样，搜索引擎还是要搜一把，如果恰好有人解决了这个问题呢～如果没有人解决过，首先要想想看周边有没有人可能遇到同样的问题，去问问那些踩过坑的人，他们经验丰富或许可以帮上忙；如果身边没有这样的人，找一些专业的人或者专业的地方，付费提问总是最高效的办法；实在没人帮你了，你可以考虑研究下这个问题的原理并尝试解决它，然后将解决思路分享给大家。</p>
+<h1 id="对问题再抽象"><a href="#对问题再抽象" class="headerlink" title="对问题再抽象"></a>对问题再抽象</h1><p>如果你学习了原理还是无法解决这个问题，可以考虑下这个问题，在其他领域有没有类似的问题。比如2013年左右想在Android实现图片识别，需要自己开发很多东西才能完成，以我的能力是解决不了的，而且这个问题在当时也属于小众需求。我想了想，图片识别在PC领域是很常见的需求了，于是我就按照PC上skuli软件的做法自己模仿着做了个简单版的Android图片识别工具。</p>
+<p>所以，多接触些技术，多看些技术新闻，多跟人交流，总会有收获的。</p>
+<h1 id="还是解决不了？"><a href="#还是解决不了？" class="headerlink" title="还是解决不了？"></a>还是解决不了？</h1><p>费了九牛二虎之力还是没搞定，可能需要思考一下自己的目的，能否从其他途径解决，曲线救国的道理。</p>
+<p>或者，再仔细想一想，这个问题是不是真的有必要花这么多时间解决。</p>
+<p>我在最近的工作中做了一个监控脚本，监控到某个条件满足后需要向一些同事发送告警邮件。监控的部分这里不涉及，只介绍一下发邮件的部分。</p>
+<h1 id="问题是什么-1"><a href="#问题是什么-1" class="headerlink" title="问题是什么"></a>问题是什么</h1><p>首先，我的问题是「发邮件」，「使用Python来实现邮件发送」。</p>
+<h1 id="问题分解-1"><a href="#问题分解-1" class="headerlink" title="问题分解"></a>问题分解</h1><p>先来看下发邮件时需要支持哪些功能：</p>
+<p><img src="email_list.png" alt=""></p>
+<p>发送邮件涉及到的细节可以大致理解为下面的这张张图：</p>
+<p><img src="email_detail.png" alt=""></p>
+<p>这个问题分解后，可以变成以下5个问题：</p>
+<p><img src="min_email.png" alt=""></p>
+<p><strong>问题1：</strong> 使用Python实现邮件发送，只需要有主送的收件人，邮件内容只需要有普通的文本内容</p>
+<p><strong>问题1</strong> 是这5个问题中的根本，其他4个问题必须在问题1的基础上才能解决</p>
+<p><strong>问题2：</strong> 收件人主送+抄送，邮件内容为文本</p>
+<p><strong>问题3：</strong> 收件人主送+抄送+密送，邮件内容为文本</p>
+<p><strong>问题4：</strong> 收件人主送+抄送+密送，邮件内容为文本+图片+链接</p>
+<p><strong>问题5：</strong> 收件人主送+抄送+密送，邮件内容为文本+图片+链接+附件</p>
+<p>我们先来解决『问题1』</p>
+<h2 id="解决问题1"><a href="#解决问题1" class="headerlink" title="解决问题1"></a>解决问题1</h2><h3 id="是否是大众问题？"><a href="#是否是大众问题？" class="headerlink" title="是否是大众问题？"></a>是否是大众问题？</h3><p>思考一下，发邮件的场景很多地方都有，而且很多系统都实现了无数遍了，所以我认为这个问题<strong>是大众问题</strong></p>
+<h3 id="别人是否已经解决过了相关的问题？"><a href="#别人是否已经解决过了相关的问题？" class="headerlink" title="别人是否已经解决过了相关的问题？"></a>别人是否已经解决过了相关的问题？</h3><p>通过搜索引擎搜索相关的关键字，看一看别人是不是已经解决过相关的问题了。此处的关键字应该是 <code>Python</code> + <code>Email</code> ，搜索出来的结果是：</p>
+<p><img src="google.png" alt=""></p>
+<p>搜索出来的前3条结果，都是Python官方文档里email示例，看来官方已经有提供现成的代码了，点<a href="https://docs.python.org/3.4/library/email-examples.html" target="_blank" rel="noopener">进去</a>看看～（插一句，据说这年头能熟练使用Google的人已经能干翻98%的同行了）</p>
+<p>第一个示例是:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># Import smtplib for the actual sending function</span><br><span class="line">import smtplib</span><br><span class="line"></span><br><span class="line"># Import the email modules we&apos;ll need</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line"></span><br><span class="line"># Open a plain text file for reading.  For this example, assume that</span><br><span class="line"># the text file contains only ASCII characters.</span><br><span class="line">with open(textfile) as fp:</span><br><span class="line">    # Create a text/plain message</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line"></span><br><span class="line"># me == the sender&apos;s email address</span><br><span class="line"># you == the recipient&apos;s email address</span><br><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line"># Send the message via our own SMTP server.</span><br><span class="line">s = smtplib.SMTP(&apos;localhost&apos;)</span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>拿到这段示例代码后，要先大概看一下这段代码是怎样的一个流程，而不是直接拷贝到自己的电脑上跑一把。因为很多示例代码是需要做适当修改，比如修改某些参数值后才能在你的电脑上跑起来的，如果直接运行，很可能会运行失败，这时再回过头去查代码，还不如先熟悉一下代码再运行，出了问题也能更快速地定位。</p>
+<p>好，先看看这段代码的流程。假设这段代码是下面这样的，没有任何注释(对于很多英语不好，刚刚入门的新人来说，这段代码有没有注释其实并没有任何区别，因为大家习惯性地逃避英文注释…):</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line"></span><br><span class="line">with open(textfile) as fp:</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line"></span><br><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line">s = smtplib.SMTP(&apos;localhost&apos;)</span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>对于没有注释的代码，或者看不懂注释的代码，应该怎么去读懂它？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br></pre></td></tr></table></figure>
+<p>首先，前两行代码，知道它引入了两个东西，先不去管这两个东西是干啥的；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with open(textfile) as fp:</span><br><span class="line">    msg = MIMEText(fp.read())</span><br></pre></td></tr></table></figure>
+<p>然后，这两行代码，可以理解为，打开(<code>open()</code>)了一个文本文件(变量名<code>textfile</code>)，然后将文件里的内容读(<code>read()</code>)出来后做了一番操作(<code>MIMEText()</code>)，赋值给了msg这个对象(<code>msg=</code>)，读到这里，我们只需要记住：<code>msg</code>这个对象保存了文件<code>textfile</code>里的相关内容即可；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br></pre></td></tr></table></figure>
+<p>紧接着，这三行代码都是<code>msg[xx]=xxx</code>这种样子，这就可以理解为，<code>msg</code>可能是 Python 里<code>dict</code>类型的对象，这三行代码可能是在给这个<code>dict</code>对象里不同的<code>key</code>（’Subject’、’From’和’To’）赋不同的<code>value</code>值；</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">s = smtplib.SMTP(&apos;localhost&apos;)</span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>最后这3行代码中:</p>
+<p><code>s = smtplib.SMTP(&#39;localhost&#39;)</code> 可以理解为<code>s</code>是某种与<code>localhost</code>这个host地址相关的对象；</p>
+<p>然后<code>s.send_message(msg)</code>说明<code>s</code>这个对象可以<code>send_message()</code>，也就是可以发送消息，发送的消息内容可能跟之前定义的<code>msg</code>对象有关；</p>
+<p>最后，<code>s</code>发送完消息，<code>quit</code>退出了。</p>
+<p>要理解上面这3行代码，最基本的英语 ‘localhost’、’send_message’ 和 ‘quit’ 是要能看懂的，如果连这几个词都看不懂，赶紧去有道翻译里翻译一把～</p>
+<p>好，上面的代码看完了。</p>
+<p>要注意的是，上面的代码到目前为止其实并没有完全看懂，前两行<code>import</code>语句没有关注，最后的<code>smtplib.SMTP()</code>也没有关注，我们只是知道了代码的大概流程是：读取了一个文件里的内容，然后发送了出去。</p>
+<blockquote>
+<p>我的经验是，读代码的过程中，只需要读懂大概就行，千万不要一行一行去死磕，不是非得把每行代码都必须看懂的。如果你为了弄清楚第一行代码<code>import smtplib</code>是什么意思，你可能会去查<code>smtplib</code>的相关文档，然后可能还会要查<code>smtp协议</code>是什么个流程（smtp协议是在<a href="https://tools.ietf.org/html/rfc5321" target="_blank" rel="noopener">RFC5321</a>）里定义的，90多页的文档，看到啥时候是个头？（当然，如果是学生时期，有大把的时间，可以去扩展下这些知识；但如果是工作中，这么做显然不够明智）</p>
+</blockquote>
+<p>那么它能不能解决我们的问题呢？我们的问题是：<strong>「问题1：使用Python实现邮件发送，只需要有主送的收件人，邮件内容只需要有普通的文本内容」</strong></p>
+<p>这段代码里的收件人，在哪里？</p>
+<p>回过头来再看这段代码，它应该是在<code>msg[&#39;To&#39;] = you</code>这一行，<code>you</code>就应该是收件人的邮箱地址，而邮件内容应该就是<code>textfile</code>这个文本文件里的内容了，那么</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br></pre></td></tr></table></figure>
+<p>这两行表示什么呢？看它的意思，应该是<code>邮件的标题(Subject)</code>和<code>发件人(From)信息</code></p>
+<p><code>标题(Subject)</code>好理解一些，邮件一般会有个标题；<code>发件人(From)</code>怎么理解呢？发邮件的不就是我自己嘛，为什么需要写发件人？想一想自己收到一封邮件时，确实是知道发件人是谁的，这里的这个<code>发件人(From)</code>应该就是告诉一下收件人，这是<code>我</code>给你发的邮件。</p>
+<p>好，这么看，这段代码理论上是能解决我们的问题的，修改一下这段代码里的参数值，试一试：</p>
+<blockquote>
+<p>file: test_email.py<br>code: Python3</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#coding: utf-8</span><br><span class="line"></span><br><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line"></span><br><span class="line">textfile = &quot;test.txt&quot;</span><br><span class="line">me = &quot;xxxxx@126.com&quot;</span><br><span class="line">you = &quot;xxxxx@gmail.com&quot;</span><br><span class="line"></span><br><span class="line">with open(textfile) as fp:</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line"></span><br><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line">s = smtplib.SMTP(&apos;localhost&apos;)</span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>file: test.txt</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">你好，</span><br><span class="line"></span><br><span class="line">这里是文本内容。</span><br><span class="line"></span><br><span class="line">谢谢！</span><br></pre></td></tr></table></figure>
+<p>运行结果:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;test_email.py&quot;, line 11, in &lt;module&gt;</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/encodings/ascii.py&quot;, line 26, in decode</span><br><span class="line">    return codecs.ascii_decode(input, self.errors)[0]</span><br><span class="line">UnicodeDecodeError: &apos;ascii&apos; codec can&apos;t decode byte 0xe4 in position 0: ordinal not in range(128)</span><br></pre></td></tr></table></figure>
+<p>运行出错了。</p>
+<p>出现了一个<strong>新问题</strong>。</p>
+<p>注意，我们是在解决<strong>「问题1：使用Python实现邮件发送，只需要有主送的收件人，邮件内容只需要有普通的文本内容」</strong>的过程中，遇到了一个新的问题：<strong>「问题1-1：代码运行出错」</strong>，为了解决<code>问题1</code>，我们需要先尝试解决一下<code>问题1-1</code>。</p>
+<p>还是按照这一套解决问题的思路从头开始解决这个<code>问题1-1</code></p>
+<h2 id="解决问题1-1"><a href="#解决问题1-1" class="headerlink" title="解决问题1-1"></a>解决问题1-1</h2><h3 id="问题是什么-2"><a href="#问题是什么-2" class="headerlink" title="问题是什么"></a>问题是什么</h3><p>代码运行出错，要解决这个错误</p>
+<h3 id="问题分解-2"><a href="#问题分解-2" class="headerlink" title="问题分解"></a>问题分解</h3><p>这个问题已经不必分解了，就是要解决错误。</p>
+<p>但是问题的详细内容需要确认一下，这个问题具体是什么？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;test_email.py&quot;, line 11, in &lt;module&gt;</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/encodings/ascii.py&quot;, line 26, in decode</span><br><span class="line">    return codecs.ascii_decode(input, self.errors)[0]</span><br><span class="line">UnicodeDecodeError: &apos;ascii&apos; codec can&apos;t decode byte 0xe4 in position 0: ordinal not in range(128)</span><br></pre></td></tr></table></figure>
+<p>这段错误信息，首先打出了<code>Traceback</code>，即追踪信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;test_email.py&quot;, line 11, in &lt;module&gt;</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/encodings/ascii.py&quot;, line 26, in decode</span><br><span class="line">    return codecs.ascii_decode(input, self.errors)[0]</span><br></pre></td></tr></table></figure>
+<p>追踪信息，显示的是这个错误的来龙去脉，也就是这个错误的源头是哪里，过程经历了什么，最后在哪里表现出来的。</p>
+<p>上面的追踪信息，可以看出这个错误的源头，是文件<code>test_email.py</code>的第<code>11</code>行，最后在文件<code>.pyenv/versions/3.4.3/lib/python3.4/encodings/ascii.py</code>的第<code>26</code>行处表现出来了。</p>
+<p>文件<code>test_email.py</code>是我们自己写的文件，而<code>.pyenv/versions/3.4.3/lib/python3.4/encodings/ascii.py</code>并不是我们自己写的。自己写的代码自己心里有数，可以查；但是别人的代码，看起来很费时间的，我的经验是不看。</p>
+<p>我们目前只知道，错误是从这一行代码发生的：<code>msg = MIMEText(fp.read())</code> ，但这一行代码可以说只有3个操作，即<code>fp.read()</code>、<code>MIMETest()</code> 和 <code>=</code>，这3个操作中是哪里出了问题暂时不能知道，我们再往下看。</p>
+<p>接着，要看一下错误的信息：<code>UnicodeDecodeError: &#39;ascii&#39; codec can&#39;t decode byte 0xe4 in position 0: ordinal not in range(128)</code> 这句话的意思，大概是代码出现了一个<code>UnicodeDecodeError</code>类型的错误，错误的描述是: <code>&#39;ascii&#39; codec can&#39;t decode byte 0xe4 in position 0: ordinal not in range(128)</code>。</p>
+<p><code>UnicodeDecodeError</code>需要查一下，意思应该是<code>Unicode解码错误</code>，你可能不知道<code>Unicode</code>是什么东西，查一下，了解一下就好，它大概是一种<code>字符集</code>（字符集，是一种字符的集合，这个集合里保存了很多字符，这些字符包含了我们平时用到的英文、数字、汉字、标点符号甚至emoji，也就是说它是一些符号的集合），所以<code>UnicodeDecodeError</code>可以理解为<code>字符解码错误</code>。</p>
+<p><code>解码</code>又是什么意思？这个时候你可能需要额外花一些时间去弄清楚<code>字符集</code>和<code>字符编码</code>的含义，这件事绝对很有必要花时间弄清楚，但不是现在，因为你要解决的是<strong>「问题1-1：代码运行出错」</strong>，「问题1-1」已经是「问题1」的一个延伸问题了，最好不要<strong>再延伸</strong>出一个「问题1-1-1」来，工作上没有这么多时间留给你，最好的办法是<strong>找最直接的办法</strong>解决「问题1-1」，然后再花时间弄清楚底层的原理。</p>
+<p>接着看错误的描述：<code>&#39;ascii&#39; codec can&#39;t decode byte 0xe4 in position 0: ordinal not in range(128)</code>，这句话的意思大概是：「’ascii’ 编解码器 无法 解码 字节 0xe4 在位置0处，序号 不在 range(128)范围内」。看完这个错误描述后，我们可能还是不能理解它的意思。</p>
+<p>不过我们还是搞清楚了问题的大概内容是：读一个文件，然后做一些操作，在给某个位置的字符解码时出现错误了，而且错误的源头是在文件<code>test_email.py</code>的第<code>11</code>行。接着按照思路走～</p>
+<h3 id="是否是大众问题？-1"><a href="#是否是大众问题？-1" class="headerlink" title="是否是大众问题？"></a>是否是大众问题？</h3><p>官方的代码，应该有很多人都运行过的，为什么我这里出了问题，别人那里肯定也出过问题吧？所以我认为它还是属于大众问题。（人称要换一下，都换成我们比较好，假设我们刚刚学会python基础）———–</p>
+<h3 id="别人是否已经解决过了相关的问题？-1"><a href="#别人是否已经解决过了相关的问题？-1" class="headerlink" title="别人是否已经解决过了相关的问题？"></a>别人是否已经解决过了相关的问题？</h3><p>搜一下，关键字：<code>Python</code> + <code>UnicodeDecodeError</code> ，搜索结果：</p>
+<p><img src="google2.png" alt=""></p>
+<p>搜索结果的前2条信息似乎都跟我们的错误信息相似，先选第2条我们能看懂的，<a href="http://blog.csdn.net/a657941877/article/details/9063883" target="_blank" rel="noopener">中文的文章</a></p>
+<p><img src="google3.png" alt=""></p>
+<p>这个结果似乎并不能直接解决我们的问题，因为这篇文章里所说的问题虽然和我们遇到的问题相似，但出现的方式不一样，所以不能直接解决问题1-1。</p>
+<p>再回头看搜索结果的第1条，<a href="https://stackoverflow.com/questions/21129020/how-to-fix-unicodedecodeerror-ascii-codec-cant-decode-byte" target="_blank" rel="noopener">英文的文章</a>，这是<code>stackoverflow</code>上的问题（stackoverflow可以理解为一个针对计算机从业人员的问答网站，大家有问题可以在这上面提问，但必须用英文，而且要提出有质量的问题才行）。这篇文章貌似也不能直接解决问题1-1。</p>
+<p>这个时候，搜索结果似乎找不到是不是有人解决过问题1-1了。别急，再加些关键字再搜索：这次，我们加一个关键字 <code>read</code>，搜索关键字改为 <code>Python</code> + <code>read</code> + <code>UnicodeDecodeError</code>，看看搜索结果：</p>
+<p><img src="google4.png" alt=""></p>
+<p>这次又了新的结果出现，我们还是先点我们能看懂的那<a href="http://monsterhuan.iteye.com/blog/1948945" target="_blank" rel="noopener">第2条信息</a>：</p>
+<p><img src="google5.png" alt=""></p>
+<p>这篇文章里的代码，跟我们写的代码很相似呀，看看他是怎么解决的：</p>
+<p><img src="google6.png" alt=""></p>
+<p>就是这里了，在<code>open()</code>中增加了一个参数<code>encoding=&#39;utf-8&#39;</code>，我们也来试试看：</p>
+<blockquote>
+<p>file: test_email.py<br>code: Python3</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">#coding: utf-8</span><br><span class="line"></span><br><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line"></span><br><span class="line">textfile = &quot;test.txt&quot;</span><br><span class="line">me = &quot;xxxxx@126.com&quot;</span><br><span class="line">you = &quot;xxxxx@gmail.com&quot;</span><br><span class="line"></span><br><span class="line"># open()中增加一个参数encoding=&apos;utf-8&apos;</span><br><span class="line">with open(textfile, encoding=&apos;utf-8&apos;) as fp:</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line"></span><br><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line">s = smtplib.SMTP(&apos;localhost&apos;)</span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>再运行一次，看看结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;test_email.py&quot;, line 18, in &lt;module&gt;</span><br><span class="line">    s = smtplib.SMTP(&apos;localhost&apos;)</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/smtplib.py&quot;, line 242, in __init__</span><br><span class="line">    (code, msg) = self.connect(host, port)</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/smtplib.py&quot;, line 321, in connect</span><br><span class="line">    self.sock = self._get_socket(host, port, self.timeout)</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/smtplib.py&quot;, line 292, in _get_socket</span><br><span class="line">    self.source_address)</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/socket.py&quot;, line 512, in create_connection</span><br><span class="line">    raise err</span><br><span class="line">  File &quot;.pyenv/versions/3.4.3/lib/python3.4/socket.py&quot;, line 503, in create_connection</span><br><span class="line">    sock.connect(sa)</span><br><span class="line">ConnectionRefusedError: [Errno 61] Connection refused</span><br></pre></td></tr></table></figure>
+<p>又出错了…</p>
+<p>「辛辛苦苦查了半天资料，还是解决不了问题…」此时很多刚刚入门的新手经常会有这样的心理</p>
+<p>这个时候，应该硬着头皮继续查，前面那么辛苦都熬过去了，再试一试吧…</p>
+<p>定眼一看，这次的错误已经跟问题1-1的错误不一样了！这次的错误源头是文件<code>test_email.py</code>的第<code>18</code>行<code>s = smtplib.SMTP(&#39;localhost&#39;)</code>，也就是说，而问题1-1的错误源头是文件<code>test_email.py</code>的第<code>11</code>行，也就是说第<code>11</code>行的代码<code>msg = MIMEText(fp.read())</code>应该是没问题啦！啊…看来通过网上的方法，<code>在open()中增加一个参数encoding=&#39;utf-8&#39;</code><strong>能够解决问题1-1</strong>。</p>
+<p>不过问题1-1解决后，又发现了一个新的问题：<strong>「问题1-2: 还是代码运行出错」</strong>！</p>
+<p>我们按照解决问题1-1的思路，继续解决问题1-2～</p>
+<h2 id="解决问题1-2"><a href="#解决问题1-2" class="headerlink" title="解决问题1-2"></a>解决问题1-2</h2><h3 id="问题是什么-3"><a href="#问题是什么-3" class="headerlink" title="问题是什么"></a>问题是什么</h3><p>代码运行出错，要解决这个错误</p>
+<h3 id="问题分解-3"><a href="#问题分解-3" class="headerlink" title="问题分解"></a>问题分解</h3><p><em>解决的过程与问题1-1类似，不再重复写了</em></p>
+<h3 id="是否是大众问题？-2"><a href="#是否是大众问题？-2" class="headerlink" title="是否是大众问题？"></a>是否是大众问题？</h3><p>是</p>
+<h3 id="别人是否已经解决过了相关的问题？-2"><a href="#别人是否已经解决过了相关的问题？-2" class="headerlink" title="别人是否已经解决过了相关的问题？"></a>别人是否已经解决过了相关的问题？</h3><p>经过一番搜索后得知，问题1-2 的出错原因是我们需要链接一个<code>smtp</code>服务器，我们代码里写的这个服务器地址是<code>localhost</code>，也就是我们本地；但我们本地并没有搭建<code>smtp</code>服务器，所以我们需要找其他<code>第三方的smtp服务器</code>，后续的过程不再重复写了</p>
+<p><em>解决的过程与问题1-1类似，不再重复写了</em></p>
+<p><em>…</em></p>
+<p>最终代码改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#coding: utf-8</span><br><span class="line"></span><br><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line"></span><br><span class="line">textfile = &quot;test.txt&quot;</span><br><span class="line">me = &quot;xxxxx@126.com&quot;</span><br><span class="line">you = &quot;xxxxx@gmail.com&quot;</span><br><span class="line"></span><br><span class="line"># open()中增加一个参数encoding=&apos;utf-8&apos;</span><br><span class="line">with open(textfile, encoding=&apos;utf-8&apos;) as fp:</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line"></span><br><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line">s = smtplib.SMTP(&apos;smtp.126.com&apos;, 25)</span><br><span class="line">s.login(me, &quot;xxxxx&quot;)</span><br><span class="line"></span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>代码运行后没有任何报错，也没有任何返回信息，去看看有没有收到邮件？确实收到了：</p>
+<p><img src="gmail.png" alt=""></p>
+<p>终于，「问题1-2：还是代码运行出错」也解决了，到此，「问题1：使用Python实现邮件发送，只需要有主送的收件人，邮件内容只需要有普通的文本内容」就完全解决掉了～</p>
+<p>歇一会吧～</p>
+<p>然后继续解决「<strong>问题2</strong>：收件人主送+抄送，邮件内容为文本」</p>
+<h2 id="解决问题2"><a href="#解决问题2" class="headerlink" title="解决问题2"></a>解决问题2</h2><p>其实问题2也是一个大众问题，而且已经有很多现成的代码可以参考了。不过为了演示一下我的这套思路，我们假设问题2是一个小众问题，而且没有搜索到解决方案，这就需要研究下发邮件的原理了。</p>
+<h3 id="学习这个问题相关原理"><a href="#学习这个问题相关原理" class="headerlink" title="学习这个问题相关原理"></a>学习这个问题相关原理</h3><p>邮件是通过 <code>s.send_message(msg)</code>这一行代码发出去的，我们先看看<code>send_message()</code>这个<a href="https://docs.python.org/3/library/smtplib.html#smtplib.SMTP.send_message" target="_blank" rel="noopener">方法的定义</a>：</p>
+<blockquote>
+<h2 id="SMTP-send-message-msg-from-addr-None-to-addrs-None-mail-options-rcpt-options"><a href="#SMTP-send-message-msg-from-addr-None-to-addrs-None-mail-options-rcpt-options" class="headerlink" title="SMTP.send_message(msg, from_addr=None, to_addrs=None, mail_options=[], rcpt_options=[])"></a>SMTP.send_message(msg, from_addr=None, to_addrs=None, mail_options=[], rcpt_options=[])</h2><p>This is a convenience method for calling sendmail() with the message represented by an email.message.Message object. The arguments have the same meaning as for sendmail(), except that msg is a Message object.</p>
+<p>If from_addr is None or to_addrs is None, send_message fills those arguments with addresses extracted from the headers of msg as specified in RFC 5322: from_addr is set to the Sender field if it is present, and otherwise to the From field. to_addrs combines the values (if any) of the To, Cc, and Bcc fields from msg. If exactly one set of Resent-<em> headers appear in the message, the regular headers are ignored and the Resent-</em> headers are used instead. If the message contains more than one set of Resent-* headers, a ValueError is raised, since there is no way to unambiguously detect the most recent set of Resent- headers.</p>
+<p>send_message serializes msg using BytesGenerator with \r\n as the linesep, and calls sendmail() to transmit the resulting message. Regardless of the values of from_addr and to_addrs, send_message does not transmit any Bcc or Resent-Bcc headers that may appear in msg. If any of the addresses in from_addr and to_addrs contain non-ASCII characters and the server does not advertise SMTPUTF8 support, an SMTPNotSupported error is raised. Otherwise the Message is serialized with a clone of its policy with the utf8 attribute set to True, and SMTPUTF8 and BODY=8BITMIME are added to mail_options.</p>
+</blockquote>
+<p>注意到里面的一句话：<code>to_addrs combines the values (if any) of the To, Cc, and Bcc fields from msg</code>，这句话的意思是 <code>to_addrs</code>这个参数的值是从<code>msg</code>这个对象的<code>To</code>、<code>Cc</code>和<code>Bcc</code>三个地方取出来的。我们的<code>msg</code>对象中，之前只填写了<code>Subject</code>、<code>Frome</code>和<code>To</code> 三个键的值，那是不是说我们把<code>Cc</code>和<code>Bcc</code>三个键也赋上值就可以了呢？</p>
+<p>试试看：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">#coding: utf-8</span><br><span class="line"></span><br><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line"></span><br><span class="line">textfile = &quot;test.txt&quot;</span><br><span class="line">me = &quot;xxxxx@126.com&quot;</span><br><span class="line">you = &quot;xxxxx@gmail.com&quot;</span><br><span class="line"></span><br><span class="line"># open()中增加一个参数encoding=&apos;utf-8&apos;</span><br><span class="line">with open(textfile, encoding=&apos;utf-8&apos;) as fp:</span><br><span class="line">    msg = MIMEText(fp.read())</span><br><span class="line"></span><br><span class="line">msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">msg[&apos;From&apos;] = me</span><br><span class="line">msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line">msg[&apos;Cc&apos;] = &quot;xxxxx@163.com&quot;</span><br><span class="line">msg[&apos;Bcc&apos;] = &quot;xxxxx@gmail.com&quot;</span><br><span class="line"></span><br><span class="line">s = smtplib.SMTP(&apos;smtp.126.com&apos;, 25)</span><br><span class="line">s.login(me, &quot;xxxxx&quot;)</span><br><span class="line"></span><br><span class="line">s.send_message(msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>果然可以，问题2就这样解决啦，而且<strong>顺带着连问题3也一起解决了</strong>～</p>
+<p><img src="send_ok1.png" alt=""></p>
+<p>好了，接下来开始解决邮件内容的问题了，<strong>问题4: 收件人主送+抄送+密送，邮件内容为文本+图片+链接</strong></p>
+<h2 id="解决问题4"><a href="#解决问题4" class="headerlink" title="解决问题4"></a>解决问题4</h2><p>我们的邮件内容是在<code>msg</code>里中设置的，它是一个<code>MIMEText</code>对象，这个类里面有没有办法添加图片呢？我们再次假设这个问题找不到现成的解决方法，再看一下它的<a href="https://docs.python.org/2/library/email.mime.html#email.mime.text.MIMEText" target="_blank" rel="noopener">相关原理</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class email.mime.text.MIMEText(_text[, _subtype[, _charset]])</span><br><span class="line">Module: email.mime.text</span><br><span class="line"></span><br><span class="line">A subclass of MIMENonMultipart, the MIMEText class is used to create MIME objects of major type text. _text is the string for the payload. _subtype is the minor type and defaults to plain. _charset is the character set of the text and is passed as a parameter to the MIMENonMultipart constructor; it defaults to us-ascii. If _text is unicode, it is encoded using the output_charset of _charset, otherwise it is used as-is.</span><br><span class="line"></span><br><span class="line">Changed in version 2.4: The previously deprecated _encoding argument has been removed. Content Transfer Encoding now happens implicitly based on the _charset argument.</span><br><span class="line"></span><br><span class="line">Unless the _charset parameter is explicitly set to None, the MIMEText object created will have both a Content-Type header with a charset parameter, and a Content-Transfer-Encoding header. This means that a subsequent set_payload call will not result in an encoded payload, even if a charset is passed in the set_payload command. You can “reset” this behavior by deleting the Content-Transfer-Encoding header, after which a set_payload call will automatically encode the new payload (and add a new Content-Transfer-Encoding header).</span><br></pre></td></tr></table></figure>
+<p>注意这句：<code>the MIMEText class is used to create MIME objects of major type text</code>，<code>MIMEText</code>主要是<code>text</code>类型的对象，那么链接、图片和附件这种可能就不能够使用<code>MIMEText</code>了。</p>
+<p>那用什么呢？<code>MIMEText</code>是<code>MIMENonMultipart</code>的子类，而<code>MIMENonMultipart</code>是<code>an intermediate base class for MIME messages that are not multipart</code>，所以也不能用<code>MIMENonMultipart</code>。</p>
+<p><code>MIMENonMultipart</code>又是<code>MIMEBase</code>的子类，看看<a href="https://docs.python.org/2/library/email.mime.html#email.mime.base.MIMEBase" target="_blank" rel="noopener">MIMEBase</a>的描述：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class email.mime.base.MIMEBase(_maintype, _subtype, **_params)</span><br><span class="line">Module: email.mime.base</span><br><span class="line"></span><br><span class="line">This is the base class for all the MIME-specific subclasses of Message. Ordinarily you won’t create instances specifically of MIMEBase, although you could. MIMEBase is provided primarily as a convenient base class for more specific MIME-aware subclasses.</span><br><span class="line"></span><br><span class="line">_maintype is the Content-Type major type (e.g. text or image), and _subtype is the Content-Type minor type (e.g. plain or gif). _params is a parameter key/value dictionary and is passed directly to Message.add_header.</span><br><span class="line"></span><br><span class="line">The MIMEBase class always adds a Content-Type header (based on _maintype, _subtype, and _params), and a MIME-Version header (always set to 1.0).</span><br></pre></td></tr></table></figure>
+<p>看来<code>MIMEBase</code>能够满足我们邮件内容的要求，但是注意：<code>Ordinarily you won’t create instances specifically of MIMEBase, although you could. MIMEBase is provided primarily as a convenient base class for more specific MIME-aware subclasses.</code>，我们应该用<code>MIMEBase</code>的子类，而不建议直接用<code>MIMEBase</code>。</p>
+<p>再找找看，哪种类还可以放下不同类型的邮件内容呢？</p>
+<p><a href="https://docs.python.org/2/library/email.mime.html#email.mime.multipart.MIMEMultipart" target="_blank" rel="noopener">MIMEMultipart</a>是符合我们要求的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">class email.mime.multipart.MIMEMultipart([_subtype[, boundary[, _subparts[, _params]]]])</span><br><span class="line">Module: email.mime.multipart</span><br><span class="line"></span><br><span class="line">A subclass of MIMEBase, this is an intermediate base class for MIME messages that are multipart. Optional _subtype defaults to mixed, but can be used to specify the subtype of the message. A Content-Type header of multipart/_subtype will be added to the message object. A MIME-Version header will also be added.</span><br><span class="line"></span><br><span class="line">Optional boundary is the multipart boundary string. When None (the default), the boundary is calculated when needed (for example, when the message is serialized).</span><br><span class="line"></span><br><span class="line">_subparts is a sequence of initial subparts for the payload. It must be possible to convert this sequence to a list. You can always attach new subparts to the message by using the Message.attach method.</span><br><span class="line"></span><br><span class="line">Additional parameters for the Content-Type header are taken from the keyword arguments, or passed into the _params argument, which is a keyword dictionary.</span><br></pre></td></tr></table></figure>
+<p>试一试：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#coding: utf-8</span><br><span class="line"></span><br><span class="line">import smtplib</span><br><span class="line">from email.mime.text import MIMEText</span><br><span class="line">from email.mime.base import MIMEBase</span><br><span class="line"></span><br><span class="line">textfile = &quot;test.txt&quot;</span><br><span class="line">me = &quot;wangbooth@126.com&quot;</span><br><span class="line">you = &quot;wangbooth@gmail.com&quot;</span><br><span class="line"></span><br><span class="line"># open()中增加一个参数encoding=&apos;utf-8&apos;</span><br><span class="line">with open(textfile, encoding=&apos;utf-8&apos;) as fp:</span><br><span class="line">    # msg = MIMEText(fp.read())</span><br><span class="line">    new_msg = MIMEBase(&apos;text&apos;, &apos;plain&apos;) # 文本内容往哪儿加呢？</span><br><span class="line"></span><br><span class="line"># msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line"># msg[&apos;From&apos;] = me</span><br><span class="line"># msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line"># msg[&apos;Cc&apos;] = &quot;wang_baomi@163.com&quot;</span><br><span class="line"># msg[&apos;Bcc&apos;] = &quot;system1029@gmail.com&quot;</span><br><span class="line"></span><br><span class="line">new_msg[&apos;Subject&apos;] = &apos;The contents of %s&apos; % textfile</span><br><span class="line">new_msg[&apos;From&apos;] = me</span><br><span class="line">new_msg[&apos;To&apos;] = you</span><br><span class="line"></span><br><span class="line">new_msg[&apos;Cc&apos;] = &quot;wang_baomi@163.com&quot;</span><br><span class="line">new_msg[&apos;Bcc&apos;] = &quot;system1029@gmail.com&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">s = smtplib.SMTP(&apos;smtp.126.com&apos;, 25)</span><br><span class="line">s.login(me, &quot;wang0000&quot;)</span><br><span class="line"></span><br><span class="line"># s.send_message(msg)</span><br><span class="line">s.send_message(new_msg)</span><br><span class="line">s.quit()</span><br></pre></td></tr></table></figure>
+<p>我们创建一个<code>MIMEBase</code>类型的对象 <code>new_msg</code>，<code>new_msg</code>要代替原来<code>MIMEText</code>类型的<code>msg</code>来保存原本的文本内容，但是文本内容往哪里加呢？<code>fp</code>这个参数好像没地方放…</p>
+<p><code>MIMEBase</code>的内容里好像没有说怎样添加内容，那我们再往它的父类<code>Message</code>的<a href="https://docs.python.org/2/library/email.message.html#email.message.Message" target="_blank" rel="noopener">文档</a>中找:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">The central class in the email package is the Message class, imported from the email.message module. It is the base class for the email object model. Message provides the core functionality for setting and querying header fields, and for accessing message bodies.</span><br><span class="line"></span><br><span class="line">Conceptually, a Message object consists of headers and payloads. Headers are RFC 2822 style field names and values where the field name and value are separated by a colon. The colon is not part of either the field name or the field value.</span><br><span class="line"></span><br><span class="line">Headers are stored and returned in case-preserving form but are matched case-insensitively. There may also be a single envelope header, also known as the Unix-From header or the From_ header. The payload is either a string in the case of simple message objects or a list of Message objects for MIME container documents (e.g. multipart/* and message/rfc822).</span><br><span class="line"></span><br><span class="line">Message objects provide a mapping style interface for accessing the message headers, and an explicit interface for accessing both the headers and the payload. It provides convenience methods for generating a flat text representation of the message object tree, for accessing commonly used header parameters, and for recursively walking over the object tree.</span><br></pre></td></tr></table></figure>
+<p><code>a Message object consists of headers and payloads</code> 说明，我们刚刚创建的<code>MIMEBase</code>对象<code>new_msg</code>包含<code>headers</code>和<code>payloads</code>两个部分，<code>The payload is either a string in the case of simple message objects or a list of Message objects for MIME container documents (e.g. multipart/* and message/rfc822)</code>这句说明，<code>payload</code>为简单的内容时可以是<code>string</code>字符串，而在内容复杂的情况下，<code>payload</code>是一个list，list中的对象应该是Message对象。</p>
+<p>这样看来，我们这个<code>new_msg</code>里应该是Message对象的list才行，那么接下来就要创建另一个Message对象，然后添加到<code>new_msg</code>的<code>payload</code>中就好了:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">new_msg = MIMEBase()</span><br><span class="line">text_msg = MIMEBase(&apos;text&apos;, &apos;plain&apos;)</span><br><span class="line">img_msg = MIMEBase(&apos;image&apos;, &apos;png&apos;)</span><br></pre></td></tr></table></figure>
+<p>好了，创建好<code>text_msg</code>和<code>img_msg</code>两个对象，打算把它俩加入到<code>new_msg</code>的<code>payload</code>中。不过还有问题，文本内容还是没有放到<code>text_msg</code>中，图片内容也没有放到<code>img_msg</code>中。再看<a href="https://docs.python.org/2/library/email.message.html#email.message.Message" target="_blank" rel="noopener">文档</a>，<code>Message</code>类中有一个<code>set_payload()</code>方法，这个方法就是设置payload的了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">new_msg = MIMEBase()</span><br><span class="line">text_msg = MIMEBase(&apos;text&apos;, &apos;plain&apos;)</span><br><span class="line">img_msg = MIMEBase(&apos;image&apos;, &apos;png&apos;)</span><br><span class="line"></span><br><span class="line"># open()中增加一个参数encoding=&apos;utf-8&apos;</span><br><span class="line">with open(textfile, encoding=&apos;utf-8&apos;) as fp:</span><br><span class="line">    # msg = MIMEText(fp.read())</span><br><span class="line">    text_msg.set_payload(fp.read())</span><br><span class="line"></span><br><span class="line">with open(&apos;test.png&apos;, &apos;rb&apos;) as fp:</span><br><span class="line">    img_msg.set_payload(fp.read())</span><br></pre></td></tr></table></figure>
+<p>，先运行一下看代码改过后有没有出错。</p>
+<p>OK，没问题！</p>
+<p><code>Message</code>类还有一个<code>attach</code>()方法就是将<code>text_msg</code>和<code>img_msg</code>两个对象添加到<code>new_msg</code> payload中的方法了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">attach(payload)</span><br><span class="line">Add the given payload to the current payload, which must be None or a list of Message objects before the call. After the call, the payload will always be a list of Message objects. If you want to set the payload to a scalar object (e.g. a string), use set_payload() instead.</span><br></pre></td></tr></table></figure>
+<p>那我们试试<code>attach()</code>：</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/img/wx.jpeg" alt="WangBooth wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>赞赏是最好的支持！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/img/tipcode.jpeg" alt="WangBooth 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/img/zhifubao.jpeg" alt="WangBooth 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    WangBooth
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.wangbaomi.com/2018/01/02/python-email/" title="python_email">http://blog.wangbaomi.com/2018/01/02/python-email/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/02/dingtalk-robot/" rel="next" title="dingtalk_robot">
+                <i class="fa fa-chevron-left"></i> dingtalk_robot
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/02/blog-recommend/" rel="prev" title="blog_recommend">
+                blog_recommend <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/img/avatar.png"
+                alt="WangBooth" />
+            
+              <p class="site-author-name" itemprop="name">WangBooth</p>
+              <p class="site-description motion-element" itemprop="description">一切过往，皆为序章！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/wangbooth" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/wangbaomi" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wangbooth@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题是什么"><span class="nav-number">1.</span> <span class="nav-text">问题是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分解"><span class="nav-number">2.</span> <span class="nav-text">问题分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#是否是大众问题"><span class="nav-number">3.</span> <span class="nav-text">是否是大众问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#别人是否已经解决了相关问题"><span class="nav-number">4.</span> <span class="nav-text">别人是否已经解决了相关问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#别人的办法能否完全解决你的问题"><span class="nav-number">5.</span> <span class="nav-text">别人的办法能否完全解决你的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如果是小众问题呢"><span class="nav-number">6.</span> <span class="nav-text">如果是小众问题呢</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对问题再抽象"><span class="nav-number">7.</span> <span class="nav-text">对问题再抽象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#还是解决不了？"><span class="nav-number">8.</span> <span class="nav-text">还是解决不了？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题是什么-1"><span class="nav-number">9.</span> <span class="nav-text">问题是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分解-1"><span class="nav-number">10.</span> <span class="nav-text">问题分解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题1"><span class="nav-number">10.1.</span> <span class="nav-text">解决问题1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#是否是大众问题？"><span class="nav-number">10.1.1.</span> <span class="nav-text">是否是大众问题？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#别人是否已经解决过了相关的问题？"><span class="nav-number">10.1.2.</span> <span class="nav-text">别人是否已经解决过了相关的问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题1-1"><span class="nav-number">10.2.</span> <span class="nav-text">解决问题1-1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题是什么-2"><span class="nav-number">10.2.1.</span> <span class="nav-text">问题是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分解-2"><span class="nav-number">10.2.2.</span> <span class="nav-text">问题分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#是否是大众问题？-1"><span class="nav-number">10.2.3.</span> <span class="nav-text">是否是大众问题？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#别人是否已经解决过了相关的问题？-1"><span class="nav-number">10.2.4.</span> <span class="nav-text">别人是否已经解决过了相关的问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题1-2"><span class="nav-number">10.3.</span> <span class="nav-text">解决问题1-2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题是什么-3"><span class="nav-number">10.3.1.</span> <span class="nav-text">问题是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题分解-3"><span class="nav-number">10.3.2.</span> <span class="nav-text">问题分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#是否是大众问题？-2"><span class="nav-number">10.3.3.</span> <span class="nav-text">是否是大众问题？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#别人是否已经解决过了相关的问题？-2"><span class="nav-number">10.3.4.</span> <span class="nav-text">别人是否已经解决过了相关的问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题2"><span class="nav-number">10.4.</span> <span class="nav-text">解决问题2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#学习这个问题相关原理"><span class="nav-number">10.4.1.</span> <span class="nav-text">学习这个问题相关原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SMTP-send-message-msg-from-addr-None-to-addrs-None-mail-options-rcpt-options"><span class="nav-number">10.5.</span> <span class="nav-text">SMTP.send_message(msg, from_addr=None, to_addrs=None, mail_options=[], rcpt_options=[])</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决问题4"><span class="nav-number">10.6.</span> <span class="nav-text">解决问题4</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'wangbooth',
+            repo: 'blog.wangbaomi.com.discuss',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'f65c5f0e5a3d8968088323035bb7f3fc0ceee121',
+            
+                client_id: '17cfe2df6ffeb6b0acda'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

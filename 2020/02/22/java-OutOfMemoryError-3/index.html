@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="JVM限制了Java程序的最大内存使用量, 可以通过启动参数来配置。而Java的堆内存被划分为多个区域, 如下图所示:  这些区域的最大值, 由JVM启动参数 -Xmx 和 -XX:MaxPermSize 指定. 如果没有明确指定, 则根据操作系统平台和物理内存的大小来确定。 java.lang.OutOfMemoryError: PermGen space 错误信息所表达的意思是: 永久代(Pe">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OutOfMemoryError系列（3）: Permgen space 如何处理">
+<meta property="og:url" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="JVM限制了Java程序的最大内存使用量, 可以通过启动参数来配置。而Java的堆内存被划分为多个区域, 如下图所示:  这些区域的最大值, 由JVM启动参数 -Xmx 和 -XX:MaxPermSize 指定. 如果没有明确指定, 则根据操作系统平台和物理内存的大小来确定。 java.lang.OutOfMemoryError: PermGen space 错误信息所表达的意思是: 永久代(Pe">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/20170915173826076.png">
+<meta property="og:updated_time" content="2020-02-22T10:10:03.159Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OutOfMemoryError系列（3）: Permgen space 如何处理">
+<meta name="twitter:description" content="JVM限制了Java程序的最大内存使用量, 可以通过启动参数来配置。而Java的堆内存被划分为多个区域, 如下图所示:  这些区域的最大值, 由JVM启动参数 -Xmx 和 -XX:MaxPermSize 指定. 如果没有明确指定, 则根据操作系统平台和物理内存的大小来确定。 java.lang.OutOfMemoryError: PermGen space 错误信息所表达的意思是: 永久代(Pe">
+<meta name="twitter:image" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/20170915173826076.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/"/>
+
+
+
+
+
+  <title>OutOfMemoryError系列（3）: Permgen space 如何处理 | WangBooth's Logbook</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6052fc18aec60ff491343e23ffefe414";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WangBooth's Logbook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">王布斯的网络日志</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">OutOfMemoryError系列（3）: Permgen space 如何处理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-22T18:07:39+08:00">
+                2020-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/22/java-OutOfMemoryError-3/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/02/22/java-OutOfMemoryError-3/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>JVM限制了Java程序的最大内存使用量, 可以通过启动参数来配置。而Java的堆内存被划分为多个区域, 如下图所示:</p>
+<p><img src="20170915173826076.png" alt="java.lang.outofmemoryerror: Permgen space"></p>
+<p>这些区域的最大值, 由JVM启动参数 <code>-Xmx</code> 和 <code>-XX:MaxPermSize</code> 指定. 如果没有明确指定, 则根据操作系统平台和物理内存的大小来确定。</p>
+<p><em>java.lang.OutOfMemoryError: PermGen space</em> 错误信息所表达的意思是: <strong>永久代(Permanent Generation) 内存区域已满</strong></p>
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>我们先看看 <strong>PermGen</strong> 是用来干什么的。</p>
+<p>在JDK1.7及之前的版本, 永久代(permanent generation) 主要用于存储加载/缓存到内存中的 class 定义, 包括 class 的 名称(name), 字段(fields), 方法(methods)和字节码(method bytecode); 以及常量池(constant pool information); 对象数组(object arrays)/类型数组(type arrays)所关联的 class, 还有 JIT 编译器优化后的class信息等。</p>
+<p>很容易看出, PermGen 的使用量和JVM加载到内存中的 class 数量/大小有关。可以说 <em>java.lang.OutOfMemoryError: PermGen space</em> 的主要原因, 是加载到内存中的 class 数量太多或体积太大。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><h3 id="最简单的例子"><a href="#最简单的例子" class="headerlink" title="最简单的例子"></a>最简单的例子</h3><p>我们知道, PermGen 空间的使用量, 与JVM加载的 class 数量有很大关系。下面的代码演示了这种情况:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import javassist.ClassPool;</span><br><span class="line"></span><br><span class="line">public class MicroGenerator &#123;</span><br><span class="line">  public static void main(String[] args) throws Exception &#123;</span><br><span class="line">    for (int i = 0; i &lt; 100_000_000; i++) &#123;</span><br><span class="line">      generate(&quot;eu.plumbr.demo.Generated&quot; + i);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public static Class generate(String name) throws Exception &#123;</span><br><span class="line">    ClassPool pool = ClassPool.getDefault();</span><br><span class="line">    return pool.makeClass(name).toClass();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码在 for 循环中, 动态生成了很多class。可以看到, 使用 <a href="http://www.csg.ci.i.u-tokyo.ac.jp/~chiba/javassist/" target="_blank" rel="noopener">javassist</a> 工具类生成 class 是非常简单的。</p>
+<p>执行这段代码, 会生成很多新的 class 并将其加载到内存中, 随着生成的class越来越多,将会占满Permgen空间, 然后抛出 <em>java.lang.OutOfMemoryError: Permgen space</em> 错误, 当然, 也有可能会抛出其他类型的 OutOfMemoryError。</p>
+<p>要快速看到效果, 可以加上适当的JVM启动参数, 如: <code>-Xmx200M -XX:MaxPermSize=16M</code> 等等。</p>
+<h3 id="Redeploy-时产生的-OutOfMemoryError"><a href="#Redeploy-时产生的-OutOfMemoryError" class="headerlink" title="Redeploy 时产生的 OutOfMemoryError"></a>Redeploy 时产生的 OutOfMemoryError</h3><blockquote>
+<p><strong>说明：</strong> 如果在开发时Tomcat产生警告，可以忽略。 生产环境建议不要 redploy,直接关闭/或Kill相关的JVM，然后从头开始启动即可。</p>
+</blockquote>
+<p>下面的情形更常见,在重新部署web应用时, 很可能会引起 <em>java.lang.OutOfMemoryError: Permgen space</em> 错误. 按道理说, redeploy 时, Tomcat之类的容器会使用新的 classloader 来加载新的 class, 让<a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">垃圾收集器</a> 将之前的 classloader (连同加载的class一起)清理掉,。</p>
+<p>但实际情况可能并不乐观, 很多第三方库, 以及某些受限的共享资源, 如 thread, JDBC驱动, 以及文件系统句柄(handles), 都会导致不能彻底卸载之前的 classloader. 那么在 redeploy 时, 之前的class仍然驻留在PermGen中, <strong>每次重新部署都会产生几十MB，甚至上百MB的垃圾</strong>。</p>
+<p>假设某个应用在启动时, 通过初始化代码加载JDBC驱动连接数据库. 根据JDBC规范, 驱动会将自身注册到 <em>java.sql.DriverManager</em>, 也就是将自身的一个实例(instance) 添加到 <em>DriverManager</em> 中的一个 static 域。</p>
+<p>那么, 当应用从容器中卸载时, <em>java.sql.DriverManager</em> 依然持有 JDBC实例(Tomcat经常会发出警告), 而JDBC驱动实例又持有 <em>java.lang.Classloader</em> 实例, 那么 <a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">垃圾收集器</a> 也就没办法回收对应的内存空间。</p>
+<p>而 <em>java.lang.ClassLoader</em> 实例持有着其加载的所有 class, 通常是几十/上百 MB的内存。可以看到, redeploy时会占用另一块差不多大小的 PermGen 空间, 多次 redeploy 之后, 就会造成 <em>java.lang.OutOfMemoryError: PermGen space</em> 错误, 在日志文件中, 你应该会看到相关的错误信息。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><h3 id="1-解决程序启动时产生的-OutOfMemoryError"><a href="#1-解决程序启动时产生的-OutOfMemoryError" class="headerlink" title="1. 解决程序启动时产生的 OutOfMemoryError"></a><strong>1.</strong> 解决程序启动时产生的 OutOfMemoryError</h3><p>在程序启动时, 如果 PermGen 耗尽而产生 OutOfMemoryError 错误, 那很容易解决. 增加 PermGen 的大小, 让程序拥有更多的内存来加载 class 即可. 修改 <em>-XX:MaxPermSize</em> 启动参数, 类似下面这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -XX:MaxPermSize=512m com.yourcompany.YourClass</span><br></pre></td></tr></table></figure>
+<p>以上配置允许JVM使用的最大 PermGen 空间为 <code>512MB</code>, 如果还不够, 就会抛出 <em>OutOfMemoryError</em>。</p>
+<h3 id="2-解决-redeploy-时产生的-OutOfMemoryError"><a href="#2-解决-redeploy-时产生的-OutOfMemoryError" class="headerlink" title="2. 解决 redeploy 时产生的 OutOfMemoryError"></a><strong>2.</strong> 解决 redeploy 时产生的 OutOfMemoryError</h3><p>我们可以进行堆转储分析(heap dump analysis) —— 在 redeploy 之后, 执行堆转储, 类似下面这样:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap -dump:format=b,file=dump.hprof &lt;process-id&gt;</span><br></pre></td></tr></table></figure>
+<p>然后通过堆转储分析器(如强悍的 Eclipse MAT)加载 dump 得到的文件。找出重复的类, 特别是类加载器(classloader)对应的 class. 你可能需要比对所有的 classloader, 来找出当前正在使用的那个。</p>
+<blockquote>
+<p>Eclipse MAT 在各个平台都有独立安装包. 大约50MB左右, 官网下载地址: <a href="http://www.eclipse.org/mat/downloads.php" target="_blank" rel="noopener">http://www.eclipse.org/mat/downloads.php</a></p>
+</blockquote>
+<p>对于不使用的类加载器(inactive classloader), 需要先确定最短路径的 <a href="http://blog.csdn.net/renfufei/article/details/54407417#t0" target="_blank" rel="noopener">GC root</a> , 看看是哪一个阻止其被 <a href="http://blog.csdn.net/renfufei/article/details/54144385" target="_blank" rel="noopener">垃圾收集器</a> 所回收. 这样才能找到问题的根源. 如果是第三方库的原因, 那么可以搜索 Google/StackOverflow 来查找解决方案. 如果是自己的代码问题, 则需要在恰当的时机来解除相关引用。</p>
+<h3 id="3-解决运行时产生的-OutOfMemoryError"><a href="#3-解决运行时产生的-OutOfMemoryError" class="headerlink" title="3. 解决运行时产生的 OutOfMemoryError"></a><strong>3.</strong> 解决运行时产生的 OutOfMemoryError</h3><p>如果在运行的过程中发生 OutOfMemoryError, 首先需要确认 <a href="http://blog.csdn.net/renfufei/article/details/54144385#t6" target="_blank" rel="noopener">GC是否能从PermGen中卸载class</a>。 官方的JVM在这方面是相当的保守(在加载class之后,就一直让其驻留在内存中,即使这个类不再被使用). 但是, 现代的应用程序在运行过程中, 会动态创建大量的class, 而这些class的生命周期基本上都很短暂, 旧版本的JVM 不能很好地处理这些问题。那么我们就需要允许JVM卸载class。使用下面的启动参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+CMSClassUnloadingEnabled</span><br></pre></td></tr></table></figure>
+<p>默认情况下 <em>CMSClassUnloadingEnabled</em> 的值为<code>false</code>, 所以需要明确指定。 启用以后, <a href="http://blog.csdn.net/renfufei/article/details/54407417#t2" target="_blank" rel="noopener">GC 将会清理</a> PermGen, 卸载无用的 class. 当然, 这个选项只有在设置 <em>UseConcMarkSweepGC</em> 时生效。 如果使用了 <a href="http://blog.csdn.net/renfufei/article/details/54885190#t3" target="_blank" rel="noopener">ParallelGC</a>, 或者 <a href="http://blog.csdn.net/renfufei/article/details/54885190#t0" target="_blank" rel="noopener">Serial GC</a> 时, 那么需要切换为<a href="http://blog.csdn.net/renfufei/article/details/54885190#t6" target="_blank" rel="noopener">CMS</a>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseConcMarkSweepGC</span><br></pre></td></tr></table></figure>
+<p>如果确定 class 可以被卸载, 假若还存在 OutOfMemoryError, 那就需要进行堆转储分析了, 类似下面这种命令:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jmap -dump:file=dump.hprof,format=b &lt;process-id&gt;</span><br></pre></td></tr></table></figure>
+<p>然后通过堆转储分析器(如 Eclipse MAT) 加载 heap dump。找出最重的 classloader, 也就是加载 class 数量最多的那个. 通过加载的 class 及对应的实例数量, 比对类加载器, 找出最靠前的部分, 挨个进行分析。</p>
+<p>对于每个有嫌疑的类, 都需要手动跟踪到生成这些类的代码中, 以定位问题。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/img/wx.jpeg" alt="WangBooth wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>赞赏是最好的支持！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/img/tipcode.jpeg" alt="WangBooth 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/img/zhifubao.jpeg" alt="WangBooth 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    WangBooth
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/" title="OutOfMemoryError系列（3）: Permgen space 如何处理">http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/22/java-OutOfMemoryError-2/" rel="next" title="OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理">
+                <i class="fa fa-chevron-left"></i> OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/22/java-OutOfMemoryError-4/" rel="prev" title="OutOfMemoryError系列（4）: Metaspace 如何处理">
+                OutOfMemoryError系列（4）: Metaspace 如何处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/img/avatar.png"
+                alt="WangBooth" />
+            
+              <p class="site-author-name" itemprop="name">WangBooth</p>
+              <p class="site-description motion-element" itemprop="description">一切过往，皆为序章！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/wangbooth" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/wangbaomi" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wangbooth@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原因分析"><span class="nav-number">1.</span> <span class="nav-text">原因分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最简单的例子"><span class="nav-number">2.1.</span> <span class="nav-text">最简单的例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redeploy-时产生的-OutOfMemoryError"><span class="nav-number">2.2.</span> <span class="nav-text">Redeploy 时产生的 OutOfMemoryError</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-解决程序启动时产生的-OutOfMemoryError"><span class="nav-number">3.1.</span> <span class="nav-text">1. 解决程序启动时产生的 OutOfMemoryError</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-解决-redeploy-时产生的-OutOfMemoryError"><span class="nav-number">3.2.</span> <span class="nav-text">2. 解决 redeploy 时产生的 OutOfMemoryError</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-解决运行时产生的-OutOfMemoryError"><span class="nav-number">3.3.</span> <span class="nav-text">3. 解决运行时产生的 OutOfMemoryError</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'wangbooth',
+            repo: 'blog.wangbaomi.com.discuss',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'f65c5f0e5a3d8968088323035bb7f3fc0ceee121',
+            
+                client_id: '17cfe2df6ffeb6b0acda'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

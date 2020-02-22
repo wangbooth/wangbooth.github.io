@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="转载自: https://blog.csdn.net/renfufei/article/details/77585294  Java运行时环境内置了 垃圾收集(GC) 模块. 上一代的很多编程语言中并没有自动内存回收机制, 需要程序员手工编写代码来进行内存分配和释放, 以重复利用堆内存。 在Java程序中, 只需要关心内存分配就行。如果某块内存不再使用, 垃圾收集(Garbage Collect">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理">
+<meta property="og:url" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="转载自: https://blog.csdn.net/renfufei/article/details/77585294  Java运行时环境内置了 垃圾收集(GC) 模块. 上一代的很多编程语言中并没有自动内存回收机制, 需要程序员手工编写代码来进行内存分配和释放, 以重复利用堆内存。 在Java程序中, 只需要关心内存分配就行。如果某块内存不再使用, 垃圾收集(Garbage Collect">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/20170825191412687.png">
+<meta property="og:image" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/20170729192809053.png">
+<meta property="og:updated_time" content="2020-02-22T10:07:13.604Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理">
+<meta name="twitter:description" content="转载自: https://blog.csdn.net/renfufei/article/details/77585294  Java运行时环境内置了 垃圾收集(GC) 模块. 上一代的很多编程语言中并没有自动内存回收机制, 需要程序员手工编写代码来进行内存分配和释放, 以重复利用堆内存。 在Java程序中, 只需要关心内存分配就行。如果某块内存不再使用, 垃圾收集(Garbage Collect">
+<meta name="twitter:image" content="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/20170825191412687.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/"/>
+
+
+
+
+
+  <title>OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理 | WangBooth's Logbook</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?6052fc18aec60ff491343e23ffefe414";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">WangBooth's Logbook</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">王布斯的网络日志</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/img/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-22T18:04:22+08:00">
+                2020-02-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/22/java-OutOfMemoryError-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/02/22/java-OutOfMemoryError-2/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i>
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>转载自: <a href="https://blog.csdn.net/renfufei/article/details/77585294" target="_blank" rel="noopener">https://blog.csdn.net/renfufei/article/details/77585294</a></p>
+</blockquote>
+<p>Java运行时环境内置了 <a href="http://blog.csdn.net/renfufei/article/details/53432995" target="_blank" rel="noopener">垃圾收集(GC)</a> 模块. 上一代的很多编程语言中并没有自动内存回收机制, 需要程序员手工编写代码来进行内存分配和释放, 以重复利用堆内存。</p>
+<p>在Java程序中, 只需要关心内存分配就行。如果某块内存不再使用, <a href="http://blog.csdn.net/renfufei/article/details/54144385" target="_blank" rel="noopener">垃圾收集(Garbage Collection)</a> 模块会自动执行清理。GC的详细原理请参考 <a href="http://blog.csdn.net/column/details/14851.html" target="_blank" rel="noopener">GC性能优化</a> 系列文章, 一般来说, JVM内置的垃圾收集算法就能够应对绝大多数的业务场景。</p>
+<p><em>java.lang.OutOfMemoryError: GC overhead limit exceeded</em> 这种情况发生的原因是, <strong>程序基本上耗尽了所有的可用内存, GC也清理不了</strong>。</p>
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>JVM抛出 <em>java.lang.OutOfMemoryError: GC overhead limit exceeded</em> 错误就是发出了这样的信号: 执行垃圾收集的时间比例太大, 有效的运算量太小. 默认情况下, 如果GC花费的时间超过 <strong>98%</strong>, 并且GC回收的内存少于 <strong>2%</strong>, JVM就会抛出这个错误。</p>
+<p><img src="20170825191412687.png" alt="java.lang.OutOfMemoryError: GC overhead limit exceeded"></p>
+<p>注意, <em>java.lang.OutOfMemoryError: GC overhead limit exceeded</em> 错误只在连续多次 <a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">GC</a> 都只回收了不到2%的极端情况下才会抛出。假如不抛出 <code>GC overhead limit</code> 错误会发生什么情况呢? 那就是GC清理的这么点内存很快会再次填满, 迫使GC再次执行. 这样就形成恶性循环, CPU使用率一直是100%, 而GC却没有任何成果. 系统用户就会看到系统卡死 - 以前只需要几毫秒的操作, 现在需要好几分钟才能完成。</p>
+<p>这也是一个很好的 <a href="http://en.wikipedia.org/wiki/Fail-fast" target="_blank" rel="noopener">快速失败原则</a> 的案例。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>以下代码在无限循环中往 Map 里添加数据。 这会导致 “<em>GC overhead limit exceeded</em>” 错误:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package com.cncounter.rtime;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.util.Random;</span><br><span class="line">public class TestWrapper &#123;</span><br><span class="line">    public static void main(String args[]) throws Exception &#123;</span><br><span class="line">        Map map = System.getProperties();</span><br><span class="line">        Random r = new Random();</span><br><span class="line">        while (true) &#123;</span><br><span class="line">            map.put(r.nextInt(), &quot;value&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置JVM参数: <code>-Xmx12m</code>。执行时产生的错误信息如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: GC overhead limit exceeded</span><br><span class="line">    at java.util.Hashtable.addEntry(Hashtable.java:435)</span><br><span class="line">    at java.util.Hashtable.put(Hashtable.java:476)</span><br><span class="line">    at com.cncounter.rtime.TestWrapper.main(TestWrapper.java:11)</span><br></pre></td></tr></table></figure>
+<p>你碰到的错误信息不一定就是这个。确实, 我们执行的JVM参数为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx12m -XX:+UseParallelGC TestWrapper</span><br></pre></td></tr></table></figure>
+<p>很快就看到了 <em>java.lang.OutOfMemoryError: GC overhead limit exceeded</em> 错误提示消息。但实际上这个示例是有些坑的. 因为配置不同的堆内存大小, 选用不同的<a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">GC算法</a>, 产生的错误信息也不相同。例如,当Java堆内存设置为10M时:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx10m -XX:+UseParallelGC TestWrapper</span><br></pre></td></tr></table></figure>
+<p>DEBUG模式下错误信息如下所示:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Exception in thread &quot;main&quot; java.lang.OutOfMemoryError: Java heap space</span><br><span class="line">    at java.util.Hashtable.rehash(Hashtable.java:401)</span><br><span class="line">    at java.util.Hashtable.addEntry(Hashtable.java:425)</span><br><span class="line">    at java.util.Hashtable.put(Hashtable.java:476)</span><br><span class="line">    at com.cncounter.rtime.TestWrapper.main(TestWrapper.java:11)</span><br></pre></td></tr></table></figure>
+<p>读者应该试着修改参数, 执行看看具体。错误提示以及堆栈信息可能不太一样。</p>
+<p>这里在 Map 进行 <code>rehash</code> 时抛出了 <em>java.lang.OutOfMemoryError: Java heap space</em> 错误消息. 如果使用其他 <a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">垃圾收集算法</a>, 比如 <a href="http://blog.csdn.net/renfufei/article/details/54885190#t6" target="_blank" rel="noopener">-XX:+UseConcMarkSweepGC</a>, 或者 <a href="http://blog.csdn.net/renfufei/article/details/54885190#t9" target="_blank" rel="noopener">-XX:+UseG1GC</a>, 错误将被默认的 exception handler 所捕获, 但是没有 stacktrace 信息, 因为在创建 Exception 时 <a href="https://plumbr.eu/blog/how-not-to-create-a-permgen-leak" target="_blank" rel="noopener">没办法填充stacktrace信息</a>。</p>
+<p>例如配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xmx12m -XX:+UseG1GC</span><br></pre></td></tr></table></figure>
+<p>在Win7x64, Java8环境运行, 产生的错误信息为:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Exception: java.lang.OutOfMemoryError thrown from the UncaughtExceptionHandler in thread &quot;main&quot;</span><br></pre></td></tr></table></figure>
+<p>建议读者修改内存配置, 以及垃圾收集算法进行测试。</p>
+<p>这些真实的案例表明, 在资源受限的情况下, 无法准确预测程序会死于哪种具体的原因。所以在这类错误面前, 不能绑死某种特定的错误处理顺序。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>有一种应付了事的解决方案, 就是不想抛出 “<em>java.lang.OutOfMemoryError: GC overhead limit exceeded</em>” 错误信息, 则添加下面启动参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 不推荐</span><br><span class="line">-XX:-UseGCOverheadLimit</span><br></pre></td></tr></table></figure>
+<p>我们强烈建议不要指定该选项: 因为这不能真正地解决问题，只能推迟一点 <code>out of memory</code> 错误发生的时间，到最后还得进行其他处理。指定这个选项, 会将原来的 <em>java.lang.OutOfMemoryError: GC overhead limit exceeded</em> 错误掩盖，变成更常见的 <em>java.lang.OutOfMemoryError: Java heap space</em> 错误消息。</p>
+<p>需要注意: 有时候触发 GC overhead limit 错误的原因, 是因为分配给JVM的堆内存不足。这种情况下只需要增加堆内存大小即可。</p>
+<p>在大多数情况下, 增加堆内存并不能解决问题。例如程序中存在内存泄漏, 增加堆内存只能推迟产生 <em>java.lang.OutOfMemoryError: Java heap space</em> 错误的时间。</p>
+<p>当然, 增大堆内存, 还有可能会增加 <a href="http://blog.csdn.net/renfufei/article/details/55102729#t6" target="_blank" rel="noopener">GC pauses</a> 的时间, 从而影响程序的 <a href="http://blog.csdn.net/renfufei/article/details/55102729#t7" target="_blank" rel="noopener">吞吐量或延迟</a>。</p>
+<p>如果想从根本上解决问题, 则需要排查内存分配相关的代码. 简单来说, 需要回答以下问题:</p>
+<ol>
+<li>哪类对象占用了最多内存？</li>
+<li>这些对象是在哪部分代码中分配的。</li>
+</ol>
+<p>要搞清这一点, 可能需要好几天时间。下面是大致的流程:</p>
+<ul>
+<li>获得在生产服务器上执行堆转储(heap dump)的权限。“转储”(Dump)是堆内存的快照, 可用于后续的内存分析. 这些快照中可能含有机密信息, 例如密码、信用卡账号等, 所以有时候, 由于企业的安全限制, 要获得生产环境的堆转储并不容易。</li>
+<li>在适当的时间执行堆转储。一般来说,内存分析需要比对多个堆转储文件, 假如获取的时机不对, 那就可能是一个“废”的快照. 另外, 每执行一次堆转储, 就会对JVM进行一次“冻结”, 所以生产环境中,不能执行太多的Dump操作,否则系统缓慢或者卡死,你的麻烦就大了。</li>
+<li>用另一台机器来加载Dump文件。如果出问题的JVM内存是8GB, 那么分析 Heap Dump 的机器内存一般需要大于 8GB. 然后打开转储分析软件(我们推荐<a href="http://www.eclipse.org/mat/" target="_blank" rel="noopener">Eclipse MAT</a> , 当然你也可以使用其他工具)。</li>
+<li>检测快照中占用内存最大的 GC roots。详情请参考: <a href="https://plumbr.eu/blog/memory-leaks/solving-outofmemoryerror-dump-is-not-a-waste" target="_blank" rel="noopener">Solving OutOfMemoryError (part 6) – Dump is not a waste</a>。 这对新手来说可能有点困难, 但这也会加深你对堆内存结构以及 navigation 机制的理解。</li>
+<li>接下来, 找出可能会分配大量对象的代码. 如果对整个系统非常熟悉, 可能很快就能定位问题。运气不好的话，就只有加班加点来进行排查了。</li>
+</ul>
+<p>打个广告, 我们推荐 <a href="http://plumbr.eu/" target="_blank" rel="noopener">Plumbr, the only Java monitoring solution with automatic root cause detection</a>。 Plumbr 能捕获所有的 <em>java.lang.OutOfMemoryError</em> , 并找出其他的性能问题, 例如最消耗内存的数据结构等等。</p>
+<p>Plumbr 在后台负责收集数据 —— 包括堆内存使用情况(只统计对象分布图, 不涉及实际数据),以及在堆转储中不容易发现的各种问题。 如果发生 <em>java.lang.OutOfMemoryError</em> , 还能在不停机的情况下, 做必要的数据处理. 下面是Plumbr 对一个 <em>java.lang.OutOfMemoryError</em> 的提醒:</p>
+<p><img src="20170729192809053.png" alt="Plumbr OutOfMemoryError incident alert"></p>
+<p>强大吧, 不需要其他工具和分析, 就能直接看到:</p>
+<ul>
+<li>哪类对象占用了最多的内存(此处是 271 个 <em>com.example.map.impl.PartitionContainer</em> 实例, 消耗了 173MB 内存, 而堆内存只有 248MB)</li>
+<li>这些对象在何处创建(大部分是在 <em>MetricManagerImpl</em> 类中,第304行处)</li>
+<li>当前是谁在引用这些对象(从 GC root 开始的完整引用链)</li>
+</ul>
+<p>得知这些信息, 就可以定位到问题的根源, 例如是当地精简数据结构/模型, 只占用必要的内存即可。</p>
+<p>当然, 根据内存分析的结果, 以及Plumbr生成的报告, 如果发现对象占用的内存很合理, 也不需要修改源代码的话, 那就增大堆内存吧。在这种情况下,修改JVM启动参数, (按比例)增加下面的值:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -Xmx1024m com.yourcompany.YourClass`</span><br></pre></td></tr></table></figure>
+<p>这里配置了最大堆内存为 <code>1GB</code>。请根据实际情况修改这个值. 如果 JVM 还是会抛出 OutOfMemoryError, 那么你可能还需要查询手册, 或者借助工具再次进行分析和诊断。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="/img/wx.jpeg" alt="WangBooth wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>赞赏是最好的支持！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/img/tipcode.jpeg" alt="WangBooth 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/img/zhifubao.jpeg" alt="WangBooth 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    WangBooth
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/" title="OutOfMemoryError系列（2）: GC overhead limit exceeded 如何处理">http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/22/java-OutOfMemoryError-1/" rel="next" title="OutOfMemoryError系列（1）: Java heap space 如何处理？">
+                <i class="fa fa-chevron-left"></i> OutOfMemoryError系列（1）: Java heap space 如何处理？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/22/java-OutOfMemoryError-3/" rel="prev" title="OutOfMemoryError系列（3）: Permgen space 如何处理">
+                OutOfMemoryError系列（3）: Permgen space 如何处理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/img/avatar.png"
+                alt="WangBooth" />
+            
+              <p class="site-author-name" itemprop="name">WangBooth</p>
+              <p class="site-description motion-element" itemprop="description">一切过往，皆为序章！</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/wangbooth" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://weibo.com/wangbaomi" target="_blank" title="微博">
+                      
+                        <i class="fa fa-fw fa-weibo"></i>微博</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wangbooth@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原因分析"><span class="nav-number">1.</span> <span class="nav-text">原因分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解决方案"><span class="nav-number">3.</span> <span class="nav-text">解决方案</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: window.location.pathname, 
+            owner: 'wangbooth',
+            repo: 'blog.wangbaomi.com.discuss',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: 'f65c5f0e5a3d8968088323035bb7f3fc0ceee121',
+            
+                client_id: '17cfe2df6ffeb6b0acda'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
