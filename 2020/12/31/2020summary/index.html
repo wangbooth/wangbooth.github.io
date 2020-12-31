@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="linux," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -79,18 +79,17 @@
 
 
 
-<meta name="description" content="今天在从本地往服务器传文件时，出现了一个诡异的问题： 123&amp;gt; scp dist/test.tgz deploy@192.168.1.244:/opt/workspace/scp: /opt/workspace/: Is a directory 这个命令我几乎执行过上千次了，同样的源文件，同样的目标路径，咋这次就出错了呢？ 而且，目标服务器上 /opt/workspace/ 这个目录，是一直">
-<meta name="keywords" content="linux">
+<meta name="description" content="再烂的一年也值得总结。  每年年末总结，都觉得这一年过得好快。2021年更是如此。 1. 值得开心的事1.1 搬入自己的房子这一年最值得庆祝的事情，就是住进了自己的房子里，虽然这房子还是抵押给银行的，但毕竟是完全凭借俩人自己的能力攒钱、从朋友手里借钱付的首付，也算是圆了自己不啃老买房的梦。 房子是2019年10月份开始看，一开始还是不愿意开口找朋友借钱的，但后面开了口之后发现朋友们还是非常愿意给">
 <meta property="og:type" content="article">
-<meta property="og:title" content="scp传输文件时提示「xxx Is a directory」的问题">
-<meta property="og:url" content="http://blog.wangbaomi.com/2019/01/06/scp-error/index.html">
+<meta property="og:title" content="2020年总结及2021年展望">
+<meta property="og:url" content="http://blog.wangbaomi.com/2020/12/31/2020summary/index.html">
 <meta property="og:site_name" content="WangBooth&#39;s Logbook">
-<meta property="og:description" content="今天在从本地往服务器传文件时，出现了一个诡异的问题： 123&amp;gt; scp dist/test.tgz deploy@192.168.1.244:/opt/workspace/scp: /opt/workspace/: Is a directory 这个命令我几乎执行过上千次了，同样的源文件，同样的目标路径，咋这次就出错了呢？ 而且，目标服务器上 /opt/workspace/ 这个目录，是一直">
+<meta property="og:description" content="再烂的一年也值得总结。  每年年末总结，都觉得这一年过得好快。2021年更是如此。 1. 值得开心的事1.1 搬入自己的房子这一年最值得庆祝的事情，就是住进了自己的房子里，虽然这房子还是抵押给银行的，但毕竟是完全凭借俩人自己的能力攒钱、从朋友手里借钱付的首付，也算是圆了自己不啃老买房的梦。 房子是2019年10月份开始看，一开始还是不愿意开口找朋友借钱的，但后面开了口之后发现朋友们还是非常愿意给">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-01-06T15:59:56.000Z">
+<meta property="og:updated_time" content="2020-12-31T09:38:05.433Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="scp传输文件时提示「xxx Is a directory」的问题">
-<meta name="twitter:description" content="今天在从本地往服务器传文件时，出现了一个诡异的问题： 123&amp;gt; scp dist/test.tgz deploy@192.168.1.244:/opt/workspace/scp: /opt/workspace/: Is a directory 这个命令我几乎执行过上千次了，同样的源文件，同样的目标路径，咋这次就出错了呢？ 而且，目标服务器上 /opt/workspace/ 这个目录，是一直">
+<meta name="twitter:title" content="2020年总结及2021年展望">
+<meta name="twitter:description" content="再烂的一年也值得总结。  每年年末总结，都觉得这一年过得好快。2021年更是如此。 1. 值得开心的事1.1 搬入自己的房子这一年最值得庆祝的事情，就是住进了自己的房子里，虽然这房子还是抵押给银行的，但毕竟是完全凭借俩人自己的能力攒钱、从朋友手里借钱付的首付，也算是圆了自己不啃老买房的梦。 房子是2019年10月份开始看，一开始还是不愿意开口找朋友借钱的，但后面开了口之后发现朋友们还是非常愿意给">
 
 
 
@@ -120,13 +119,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.wangbaomi.com/2019/01/06/scp-error/"/>
+  <link rel="canonical" href="http://blog.wangbaomi.com/2020/12/31/2020summary/"/>
 
 
 
 
 
-  <title>scp传输文件时提示「xxx Is a directory」的问题 | WangBooth's Logbook</title>
+  <title>2020年总结及2021年展望 | WangBooth's Logbook</title>
   
 
 
@@ -243,7 +242,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2019/01/06/scp-error/">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/12/31/2020summary/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="WangBooth">
@@ -260,7 +259,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">scp传输文件时提示「xxx Is a directory」的问题</h1>
+          <h1 class="post-title" itemprop="name headline">2020年总结及2021年展望</h1>
         
 
         <div class="post-meta">
@@ -272,8 +271,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-06T23:49:35+08:00">
-                2019-01-06
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-31T14:37:19+08:00">
+                2020-12-31
               </time>
             
 
@@ -291,8 +290,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/01/06/scp-error/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/01/06/scp-error/" itemprop="commentsCount"></span>
+                <a href="/2020/12/31/2020summary/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2020/12/31/2020summary/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -325,13 +324,49 @@
       
 
       
-        <p>今天在从本地往服务器传文件时，出现了一个诡异的问题：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span> scp dist/test.tgz deploy@192.168.1.244:/opt/workspace/</span><br><span class="line"></span><br><span class="line">scp: /opt/workspace/: Is a directory</span><br></pre></td></tr></table></figure>
-<p>这个命令我几乎执行过上千次了，同样的源文件，同样的目标路径，咋这次就出错了呢？</p>
-<p>而且，目标服务器上 <code>/opt/workspace/</code> 这个目录，是一直都约定好的目录，一直都用的这个，而且确实是 <code>Is a directory</code>，这 <code>scp</code> 的错误信息，我有点懵逼。。</p>
-<p>于是登陆到远程服务器去看看，这个目录是咋回事，没权限了还是咋了？</p>
-<p>登陆上去后才发现，他娘的这个目录被人重命名了，成了 <code>/opt/workspace_4.3.0/</code>，这个时候才恍然大悟，原来 <code>scp</code> 的错误信息没毛病：我是在将一个文件传输到远程服务器，传输到远程服务器上后对应的是一个目录，所以<code>scp</code>不干了。</p>
-<p>不过，这种提示信息，我估计很多人都会懵逼，报错只报一半，不是个好的报错。</p>
+        <blockquote>
+<p>再烂的一年也值得总结。</p>
+</blockquote>
+<p>每年年末总结，都觉得这一年过得好快。2021年更是如此。</p>
+<h2 id="1-值得开心的事"><a href="#1-值得开心的事" class="headerlink" title="1. 值得开心的事"></a>1. 值得开心的事</h2><h3 id="1-1-搬入自己的房子"><a href="#1-1-搬入自己的房子" class="headerlink" title="1.1 搬入自己的房子"></a>1.1 搬入自己的房子</h3><p>这一年最值得庆祝的事情，就是住进了自己的房子里，虽然这房子还是抵押给银行的，但毕竟是完全凭借俩人自己的能力攒钱、从朋友手里借钱付的首付，也算是圆了自己不啃老买房的梦。</p>
+<p>房子是2019年10月份开始看，一开始还是不愿意开口找朋友借钱的，但后面开了口之后发现朋友们还是非常愿意给我借钱的，首付很快就凑好了。不过原房主是个奇葩，各种原因导致直到12月31号那天才正式把产证给办好，也算是2019年完成的一件大事吧。</p>
+<p>今年年初疫情，再加上家里定做的家具还有味道，4月份才搬进去，住自己的家，踏实~~~</p>
+<h3 id="1-2-娃两岁了"><a href="#1-2-娃两岁了" class="headerlink" title="1.2 娃两岁了"></a>1.2 娃两岁了</h3><p>娃今年身高长得真快，原来贴在桌子和墙边的防撞条，已经变矮了。</p>
+<p>有自己的逻辑，模仿能力很强，学东西也非常快，唱歌、看绘本，很快就能记住。</p>
+<p>周末有条件我都会带着娃开车出去浪一圈，弄得每过个周末娃的作息就会乱…</p>
+<p>孩子的童年值得多记录一下，2021年计划多拍些照片、拍些 Vlog，给娃、给自己都留些记忆。</p>
+<h3 id="1-3-老婆整牙了"><a href="#1-3-老婆整牙了" class="headerlink" title="1.3 老婆整牙了"></a>1.3 老婆整牙了</h3><p>牙齿一直是老婆的心病，我倒觉得牙齿不整齐没啥影响，但心病就是这样，靠讲道理是很难释然的。今年最后一个月正好附近的牙科有优惠活动，把牙给整了。<br>疼肯定是要疼一段时间的，未来2-3年也要不停地收拾牙套，对她来说都是值得的。</p>
+<p>一时间能想起的就这几件非常值得开心的事儿了，也是缺少记录，翻了翻手机照片，记录的内容太少了。</p>
+<h2 id="2-难处理的事"><a href="#2-难处理的事" class="headerlink" title="2. 难处理的事"></a>2. 难处理的事</h2><p>我记得蔡崇信有说过类似的话：没有什么难过的事，倒是有一些难处理的事。</p>
+<p>难过，就有情绪色彩了，这些人可以不带情绪地处理问题，是值得我学习的。</p>
+<p>2020年也有几件难处理的事情。</p>
+<h3 id="2-1-降薪"><a href="#2-1-降薪" class="headerlink" title="2.1 降薪"></a>2.1 降薪</h3><p>年初上班时，老板病怏怏地躺在床上开着钉钉直播给大家公布了降薪的消息，由于买房还欠了朋友的钱，原本计划年终奖+涨薪能让我尽快把钱还完的，结果年终只拿了几千块，工资还降了…之后通过银行的低利息贷款，贷了点才把钱都还完，好在贷款可以3年后再还，也算是把还钱这件难处理的事儿给处理掉了。</p>
+<p>企业降薪也是迫不得已的事情，今年年底又给涨回去了一点，能稍微宽裕一些了。</p>
+<p>有些朋友因为降薪换了个公司合作，薪资当然也涨了不少，各有所向，换工作对我现在来说，还是有一定成本的。</p>
+<h3 id="2-2-工作上的安排"><a href="#2-2-工作上的安排" class="headerlink" title="2.2 工作上的安排"></a>2.2 工作上的安排</h3><p>上半年的工作基本上属于硬扛，公司没融到钱，团队没法扩充，下半年组织架构上的调整比较失败，把前半年的成果估计都抹平了，2021年需要在团队人数上达到一个目标值，要敢于要人，死皮赖脸地要人！</p>
+<h2 id="3-其他琐碎的事情"><a href="#3-其他琐碎的事情" class="headerlink" title="3. 其他琐碎的事情"></a>3. 其他琐碎的事情</h2><p>2020年也没坚持做啥事，运动方面倒是比2019年要加强了一些，但年底体检结果跟2019年比还是更差了…</p>
+<h1 id="2021年的展望"><a href="#2021年的展望" class="headerlink" title="2021年的展望"></a>2021年的展望</h1><p><strong>持续为他人输出价值</strong>，是2021年，或者说是今后10年，我做事的大方向。</p>
+<p>不论价值大不大，都需要持续输出！</p>
+<p>回想这3年，先是生了孩子，然后买车买房，基本的生活设施都已具备了，当然还有很大的优化空间，但今后一定不能盯着钱看，而是要盯着自己<strong>给他人带来多少价值</strong>。</p>
+<p>考工作赚钱，只要我稍微用点心，10年后肯定衣食不愁。但想要将自己的财富、影响力提升一个段位，就必须为更多的人带来价值。</p>
+<h2 id="技术方面的输出"><a href="#技术方面的输出" class="headerlink" title="技术方面的输出"></a>技术方面的输出</h2><p>除了工作之外，还必须能为公司之外的人带来价值。</p>
+<ol>
+<li>2021年输出100篇技术文章，包括 LeetCode.Life、通用技术分享等；</li>
+<li>发挥不要脸的体质，拉到500个粉丝，以微信公众号粉丝、视频号粉丝为度量；</li>
+</ol>
+<h2 id="工作上的输出"><a href="#工作上的输出" class="headerlink" title="工作上的输出"></a>工作上的输出</h2><ol>
+<li>做一个可靠的支撑者，服务更多的同事，不甩锅，不打太极，不油腻，能帮忙的一定帮；</li>
+<li>将同事转化为朋友，让对方信任我；</li>
+<li>2021年加上80%同事的微信；</li>
+</ol>
+<h2 id="家庭成员身上的输出"><a href="#家庭成员身上的输出" class="headerlink" title="家庭成员身上的输出"></a>家庭成员身上的输出</h2><ol>
+<li>调动家人一起记录生活，一起拍 Vlog，在拍 Vlog 的过程中达到学习、锻炼的目标；</li>
+<li>为老婆输出一部新手机；</li>
+<li>上半年为孩子输出一个培训班，可以与家人之外的人沟通交流；下半年上个幼儿园或者多个培训班；</li>
+<li>家里添一些家具，比如投影仪、儿童学习桌椅等，后续更新。</li>
+</ol>
+<hr>
+<p>2021，量化自己的输出！</p>
 
       
     </div>
@@ -389,7 +424,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://blog.wangbaomi.com/2019/01/06/scp-error/" title="scp传输文件时提示「xxx Is a directory」的问题">http://blog.wangbaomi.com/2019/01/06/scp-error/</a>
+    <a href="http://blog.wangbaomi.com/2020/12/31/2020summary/" title="2020年总结及2021年展望">http://blog.wangbaomi.com/2020/12/31/2020summary/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -402,12 +437,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/linux/" rel="tag"># linux</a>
-          
-        </div>
-      
 
       
       
@@ -417,8 +446,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/06/2018summary/" rel="next" title="2018年总结">
-                <i class="fa fa-chevron-left"></i> 2018年总结
+              <a href="/2020/11/06/slave-of-algorithm/" rel="next" title="放下风骨，拥抱算法">
+                <i class="fa fa-chevron-left"></i> 放下风骨，拥抱算法
               </a>
             
           </div>
@@ -426,10 +455,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/01/13/2019-weekly-issue-1/" rel="prev" title="2019年每周分享第1期">
-                2019年每周分享第1期 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -488,8 +513,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -560,6 +594,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-值得开心的事"><span class="nav-number">1.</span> <span class="nav-text">1. 值得开心的事</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-搬入自己的房子"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 搬入自己的房子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-娃两岁了"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 娃两岁了</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-老婆整牙了"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 老婆整牙了</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-难处理的事"><span class="nav-number">2.</span> <span class="nav-text">2. 难处理的事</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-降薪"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 降薪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-工作上的安排"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 工作上的安排</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-其他琐碎的事情"><span class="nav-number">3.</span> <span class="nav-text">3. 其他琐碎的事情</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2021年的展望"><span class="nav-number"></span> <span class="nav-text">2021年的展望</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#技术方面的输出"><span class="nav-number">1.</span> <span class="nav-text">技术方面的输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作上的输出"><span class="nav-number">2.</span> <span class="nav-text">工作上的输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#家庭成员身上的输出"><span class="nav-number">3.</span> <span class="nav-text">家庭成员身上的输出</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
