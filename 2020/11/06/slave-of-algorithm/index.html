@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="我身边有许多杰出青年很不屑于用抖音和快手，提起「抖快」这类短视频应用往往表露出鄙视的表情，就跟城里人看到一个刚进城的乡下人一样。有一次我问老孟(我的大学同学)，   我：你在美国用 TikTok 吗？老孟：我不用，那玩意儿容易上瘾。  「那玩意儿」四个字让我感受到老孟对 TikTok 的反感（顺便说一下，TikTok 是字节跳动面向美国市场推出的美国版的抖音，国内正常途径是无法使用 TikTok">
+<meta property="og:type" content="article">
+<meta property="og:title" content="放下风骨，拥抱算法">
+<meta property="og:url" content="http://blog.wangbaomi.com/2020/11/06/slave-of-algorithm/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="我身边有许多杰出青年很不屑于用抖音和快手，提起「抖快」这类短视频应用往往表露出鄙视的表情，就跟城里人看到一个刚进城的乡下人一样。有一次我问老孟(我的大学同学)，   我：你在美国用 TikTok 吗？老孟：我不用，那玩意儿容易上瘾。  「那玩意儿」四个字让我感受到老孟对 TikTok 的反感（顺便说一下，TikTok 是字节跳动面向美国市场推出的美国版的抖音，国内正常途径是无法使用 TikTok">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5giaK6d6rQeUAK3LBiaqoPae8JrU7EI0ZKbicxygDKnH2ibyGHzwtN9O82OQ/640?wx_fmt=jpeg">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5gCaq6cG1la1P2YjzR3WaaztmDeVRYHCCiasWVoPZEAwza3zdA9QGqofw/640?wx_fmt=jpeg">
+<meta property="og:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5gKc0AZVfTcOv4rO9lb2BLLNy5h6GicubgoDTQqg9R5icPsHoafW9UjpYQ/640?wx_fmt=jpeg">
+<meta property="og:updated_time" content="2020-11-07T12:41:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="放下风骨，拥抱算法">
+<meta name="twitter:description" content="我身边有许多杰出青年很不屑于用抖音和快手，提起「抖快」这类短视频应用往往表露出鄙视的表情，就跟城里人看到一个刚进城的乡下人一样。有一次我问老孟(我的大学同学)，   我：你在美国用 TikTok 吗？老孟：我不用，那玩意儿容易上瘾。  「那玩意儿」四个字让我感受到老孟对 TikTok 的反感（顺便说一下，TikTok 是字节跳动面向美国市场推出的美国版的抖音，国内正常途径是无法使用 TikTok">
+<meta name="twitter:image" content="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5giaK6d6rQeUAK3LBiaqoPae8JrU7EI0ZKbicxygDKnH2ibyGHzwtN9O82OQ/640?wx_fmt=jpeg">
+
+<link rel="canonical" href="http://blog.wangbaomi.com/2020/11/06/slave-of-algorithm/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>放下风骨，拥抱算法 | WangBooth's Logbook</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WangBooth's Logbook</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">王布斯的网络日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/11/06/slave-of-algorithm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          放下风骨，拥抱算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-06 16:18:02" itemprop="dateCreated datePublished" datetime="2020-11-06T16:18:02+08:00">2020-11-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-11-07 20:41:26" itemprop="dateModified" datetime="2020-11-07T20:41:26+08:00">2020-11-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>我身边有许多杰出青年很不屑于用抖音和快手，提起「抖快」这类短视频应用往往表露出鄙视的表情，就跟城里人看到一个刚进城的乡下人一样。有一次我问老孟(我的大学同学)，</p>
+<blockquote>
+<p> 我：你在美国用 TikTok 吗？<br>老孟：我不用，那玩意儿容易上瘾。</p>
+</blockquote>
+<p>「那玩意儿」四个字让我感受到老孟对 TikTok 的反感（顺便说一下，TikTok 是字节跳动面向美国市场推出的美国版的抖音，国内正常途径是无法使用 TikTok 的)。</p>
+<p><strong>你可以不刷抖音，不玩快手，但你离不开微信。</strong></p>
+<p>微信视频号已经推出一段时间了，抖音和快手的玩家早已盯上微信视频号这块肥肉，不信你打开微信视频号看一看，完全跟抖快是一副尿性。相信大家的朋友圈很快就要被这些短视频给攻破了。</p>
+<p>为什么有些人非常讨厌这些短视频，而同时又有那么多人沉迷于这些短视频呢？</p>
+<p><strong>其实是算法在作祟。</strong></p>
+<p>最近读了一本书：《短视频内容算法：如何在算法推荐时代引爆短视频》，作者叫张佳，并不是大众熟知的人物。这本书本是针对正在从事短视频创作或者即将从事短视频创作的人或企业看的， 通过讲述抖音短视频的内容创作算法以及内容分发算法，来帮助创作者更高效地实现内容营销；但作为普通人，或者说是观众，通过这本书也能一窥短视频算法的究竟，从而得知为什么总是给我推荐反感的视频，或者为什么我会沉迷其中无法自拔。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5giaK6d6rQeUAK3LBiaqoPae8JrU7EI0ZKbicxygDKnH2ibyGHzwtN9O82OQ/640?wx_fmt=jpeg" alt="img"></p>
+<p><strong><em>1\</em></strong></p>
+<h2 id><a href="#" class="headerlink" title=" "></a> </h2><p><strong>观众丧失了”观看视频”的控制权</strong></p>
+<p>不论是快手、抖音还是微信视频号，这些短视频应用在播放视频时都有一个细节，你可能没意识到，但我说出来你一定会恍然大悟，那就是：这些短视频默认都不展示进度条。</p>
+<p>一条短视频在播放的过程中，我们要么一直看下去，要么觉得不喜欢，划掉它去看下一个；几乎没有人会刻意暂停一个视频，甚至找到进度条将视频往回拖一段重新看。</p>
+<p>没有进度条，你的大脑就必须跟着视频一直走，停不下来，任由信息灌输进来，容不得你深入思考。用作者的总结就是：我们失去了”单位时间内获取信息量”的控制权。</p>
+<p>为什么进度条会有如此巨大的魔力呢？我觉得，进度条其实代表的是时间，没有进度条，就意味着我们无法控制时间，同时也让我们忘却时间。观众在观看视频时注意力的失控，根源就在于时间纬度上的失控。</p>
+<p><strong><em>2\</em></strong></p>
+<h2 id="-1"><a href="#-1" class="headerlink" title=" "></a> </h2><p><strong>创作者丧失了”内容创作”的控制权</strong></p>
+<p>对于普通人，偶尔拍几个小视频记录下美好的生活，会显得十分惬意；但对于靠短视频谋生的创作者们，他们创作的内容，必须要有人看才行，今天拍出来的视频如果没人看，那明天就会饿肚子了。</p>
+<p>在微信公众号上进行文字创作的时候，作者只需要通过优雅的文字将自己大脑中的画面描述出来即可；读者们可以细细品味文字的美，并且想象出文字描绘的画面。而视频创作并不能靠观众自己想象，而是必须将观众想看到的画面呈现出来，一旦视频画面与观众想象的不吻合，观众便会拒绝这个视频。</p>
+<p>由于观众无法控制进度条，即便视频内容后半段极其吸引人，也会因为前半段不符合观众预期而被划掉。</p>
+<p>所以，不光观众丧失了对视频的控制权，创作者也不得不放弃天马行空的想法，创作出每一帧都符合观众预期的画面。说白了，创作者要创作观众脑子里的画面，而不是自己脑子里的画面。</p>
+<p><strong><em>3\</em></strong></p>
+<h2 id="-2"><a href="#-2" class="headerlink" title=" "></a> </h2><p><strong>如何创作出有流量的故事？</strong></p>
+<p>作者借助心理学、认知语言学等等一系列理论知识讲述了人类的基本认知与基本欲望，然后在此基础上教大家如何创作出有流量且吸引人的故事，我大致总结一下：如何创作出有流量的故事？在符合某一类人群的认知的基础上，创作出满足此类人群某些欲望的、且存在信息差的故事。</p>
+<p><strong>认知</strong>，其实容易理解。不同的人对同一件事的认识和理解是不一样的，比如你讲了一个实习生在生产环境 sudo rm -rf / 的故事，计算机从业者都能懂，但对于大部分英语专业的学生来说，完全不知所云；</p>
+<p><strong>欲望</strong>，不必解释。作者讲述了史蒂文·赖斯的人类 16 种基本欲望理论，回头去看抖音上的爆款视频，都至少满足了人类这 16 种欲望中的其中一个；</p>
+<p><strong>信息差</strong>，可以理解为：我知道我不知道的信息，以及 我不知道我不知道的信息。视频内容必须包含某些观众想知道但不知道的信息才能吸引人。</p>
+<p>本章中，作者还讲述了故事创作的五要素以及短视频吸引力六法则，对于从事短视频创作的人来说，值得细细研究！</p>
+<p><strong><em>4\</em></strong></p>
+<h2 id="-3"><a href="#-3" class="headerlink" title=" "></a> </h2><p><strong>短视频分发算法的原理是什么？</strong></p>
+<p>作者通过爬取大量的抖音数据后，总结了短视频分发算法原理，我概括为一句话：<strong>算法在识别出人和内容的基础上，将人与内容相连接</strong>。</p>
+<p>更专业一点的解释是：</p>
+<blockquote>
+<ol>
+<li>算法需要给视频打上标签，比如这个视频是关于计算机的，或者关于养生的，又或者是关于某个城市的等等；</li>
+<li>算法需要给观众打上标签，比如这个人是男生、程序员、单身、秃头等等；</li>
+<li>算法需要将视频与观众匹配，比如将关于计算机的视频推送给程序员，将关于养生的视频推送给秃头的人等等。</li>
+</ol>
+</blockquote>
+<p>作者解释了算法给视频打标签这一细节，其实并不是通过视频画面来给视频打标签的，而是通过视频的作者、视频标题、描述、评论信息、以及哪些人点过赞等等文字信息来给视频打标签的，为什么这么做呢？一方面是由于通过视频画面抽帧的方式来分析视频内容，技术并没有非常成熟；另一方面，在算法面前，你生产的内容是什么并不重要，你的内容被谁喜欢了才重要。举个例子，某个视频被 10 个程序员点赞了，那算法就会把这个视频推给更多的程序员，它并不关心这个视频的内容到底是不是跟程序员相关的。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5gCaq6cG1la1P2YjzR3WaaztmDeVRYHCCiasWVoPZEAwza3zdA9QGqofw/640?wx_fmt=jpeg" alt="img"></p>
+<p>此外，算法为了进行自我验证，会有一个冷启动的过程。简单来讲，算法会对一个陌生的视频先进行小范围的推广，比如推给 A、B、C 三类人群，每类人群推送 100 人；一段时间后，算法发现 B 类人群中有 80 个人点赞了这个视频，而 A 类和 C 类人群里点赞的寥寥无几，那算法就会继续往 B 类人群中再投放 200 人，继续观察，如果 B 类人群中又有 150 人点赞了，那么算法就会认为这个视频符合 B 类人群的口味，冷启动结束，这两天会使劲往 B 类人群身上推这个视频；而如果这次 B 类人群里只有 30 个人点赞，算法就会认为自己当初误判了，B 类人群并不是真的喜欢这个视频，冷启动结束，再也不推这个视频了（是的，再也不推了，因为算法忙着去找下一个优质视频了，在视频来源充足的情况下，是不会再眷恋这个视频了）。</p>
+<p>作者将短视频的分发算法讲清楚后，又详细讲解了该如何迎合算法冷启动的过程，感兴趣的朋友可以仔细研究。这里重点说下普通人，也就是观众，如何来利用算法，让算法更好地给自己推荐符合自己口味的内容。</p>
+<p>首先，让算法认识你。在个人介绍里简单描述下自己的爱好，比如爱看 NBA 或者喜欢汽车，这个描述信息尽量用计算机能轻易识别的文字来写，比如一个科比的粉丝，自我介绍写成”我是科蜜”，就不如写成”NBA 科比”这样对计算机友好；</p>
+<p>然后，每当遇到自己喜欢的视频，点个赞，告诉算法，这个就是我喜欢的类型，没错，你看我都点赞了；</p>
+<p>遇到自己反感的视频呢，不要急着划走，点一下”不喜欢”，明确告诉算法，这个我就是不喜欢。</p>
+<p>日积月累，算法便会更加了解你，从而变得更加体贴了，如果它还敢给你推反感的视频，那基本上就能放弃这个算法了，也就是放弃这个平台了。</p>
+<p><strong><em>5\</em></strong></p>
+<h2 id="-4"><a href="#-4" class="headerlink" title=" "></a> </h2><p>从微信近期在视频号上的一系列动作上看，短视频领域确实十分火热了，超清晰的手机摄像头、简单的视频编辑 APP 以及高速网络带宽，都为短视频提供了非常好的基础；但另一方面，短视频里也充斥着大量乱七八糟、低俗、无聊的垃圾视频，让很多杰出青年望而却步。</p>
+<p>我认为，未来不仅需要更好的算法来满足更好的推荐，也需要更多有意思的创作者来产出更好的内容，各位杰出青年值得尝试！</p>
+<p>扫一扫，关注下我的视频号，我会时不时来个直播~</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/zibbdYs1XYk8O8ABBgpNaasrbBQA28l5gKc0AZVfTcOv4rO9lb2BLLNy5h6GicubgoDTQqg9R5icPsHoafW9UjpYQ/640?wx_fmt=jpeg" alt="img"></p>
+<p>点击”阅读原文”，可以跳到京东购买这本书。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/15/pic-backup/" rel="prev" title="照片备份的方法">
+      <i class="fa fa-chevron-left"></i> 照片备份的方法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/31/2020summary/" rel="next" title="2020年总结及2021年展望">
+      2020年总结及2021年展望 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#-1"><span class="nav-number">2.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#-2"><span class="nav-number">3.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#-3"><span class="nav-number">4.</span> <span class="nav-text"> </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#-4"><span class="nav-number">5.</span> <span class="nav-text"> </span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WangBooth</p>
+  <div class="site-description" itemprop="description">一个2B行业的2B程序员日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

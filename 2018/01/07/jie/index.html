@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。 问题是什么把问题问清楚，是最基本的能力。 遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="总结一下解决问题的思路">
+<meta property="og:url" content="http://blog.wangbaomi.com/2018/01/07/jie/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。 问题是什么把问题问清楚，是最基本的能力。 遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.wangbaomi.com/2018/01/07/jie/solution.png">
+<meta property="og:updated_time" content="2018-01-07T15:05:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="总结一下解决问题的思路">
+<meta name="twitter:description" content="上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。 问题是什么把问题问清楚，是最基本的能力。 遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。">
+<meta name="twitter:image" content="http://blog.wangbaomi.com/2018/01/07/jie/solution.png">
+
+<link rel="canonical" href="http://blog.wangbaomi.com/2018/01/07/jie/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>总结一下解决问题的思路 | WangBooth's Logbook</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WangBooth's Logbook</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">王布斯的网络日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2018/01/07/jie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          总结一下解决问题的思路
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2018-01-07 23:02:45 / Modified: 23:05:19" itemprop="dateCreated datePublished" datetime="2018-01-07T23:02:45+08:00">2018-01-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="solution.png" alt></p>
+<p>上面这张图是我在之前的工作中总结了一套解决问题的思路，可以解决自己在工作中遇到的大部分问题（可以说我解决的都是些普普通通的问题，迄今为止我并没有遇到过什么大问题..），这套思路将随着将来的思考继续优化改进，先总结一下，后面用一些实际的例子来演示一下这套思路的用法。</p>
+<h1 id="问题是什么"><a href="#问题是什么" class="headerlink" title="问题是什么"></a>问题是什么</h1><p>把问题问清楚，是最基本的能力。</p>
+<p>遇到问题，先要弄清楚问题是什么，如果连问题都描述不清楚，自己肯定解决不了，别人也帮不了你。</p>
+<p>把问题写到纸上！</p>
+<h1 id="问题分解"><a href="#问题分解" class="headerlink" title="问题分解"></a>问题分解</h1><p>弄清楚问题的过程，也是问题分解的过程。</p>
+<p>一个大问题，要分步骤解，不要想着一口吞下去。把问题分解成一个个小问题，然后一一击破。</p>
+<p>把步骤写到纸上！</p>
+<h1 id="是否是大众问题"><a href="#是否是大众问题" class="headerlink" title="是否是大众问题"></a>是否是大众问题</h1><p>一个问题自己解决不了，我首先不是去想着去研究它的原理，而是这个问题是不是一种大众场景。我遇到的绝大多数问题，站在一个高手的角度看，都不是问题，也就是说我遇到的问题，都是别人已经解决过的问题了，最简单的办法就是拿来用！</p>
+<h1 id="别人是否已经解决了相关问题"><a href="#别人是否已经解决了相关问题" class="headerlink" title="别人是否已经解决了相关问题"></a>别人是否已经解决了相关问题</h1><p>这一步需要掌握搜索引擎的用法，一来要能访问Google，二来是问题关键字的提取。</p>
+<p>面向Google编程，就是这个意思…很多问题，只要熟练掌握上面两项技能，都能很快解决掉。</p>
+<h1 id="别人的办法能否完全解决你的问题"><a href="#别人的办法能否完全解决你的问题" class="headerlink" title="别人的办法能否完全解决你的问题"></a>别人的办法能否完全解决你的问题</h1><p>尝试！</p>
+<p>要多尝试，代码拷下来跑一遍看看。但不要指望代码拿过来就能用，一定要大概弄清楚代码的意思再运行，然后稍作改动，一般就能解决问题了。</p>
+<h1 id="如果是小众问题呢"><a href="#如果是小众问题呢" class="headerlink" title="如果是小众问题呢"></a>如果是小众问题呢</h1><p>小众问题，比如一款很小众的软件出了问题，这款人家很少有人用，这样就很难查到解决方法了。不管怎样，搜索引擎还是要搜一把，如果恰好有人解决了这个问题呢～如果没有人解决过，首先要想想看周边有没有人可能遇到同样的问题，去问问那些踩过坑的人，他们经验丰富或许可以帮上忙；如果身边没有这样的人，找一些专业的人或者专业的地方，付费提问总是最高效的办法；实在没人帮你了，你可以考虑研究下这个问题的原理并尝试解决它，然后将解决思路分享给大家。</p>
+<h1 id="对问题再抽象"><a href="#对问题再抽象" class="headerlink" title="对问题再抽象"></a>对问题再抽象</h1><p>如果你学习了原理还是无法解决这个问题，可以考虑下这个问题，在其他领域有没有类似的问题。比如2013年左右想在Android实现图片识别，需要自己开发很多东西才能完成，以我的能力是解决不了的，而且这个问题在当时也属于小众需求。我想了想，图片识别在PC领域是很常见的需求了，于是我就按照PC上skuli软件的做法自己模仿着做了个简单版的Android图片识别工具。</p>
+<p>所以，多接触些技术，多看些技术新闻，多跟人交流，总会有收获的。</p>
+<h1 id="还是解决不了？"><a href="#还是解决不了？" class="headerlink" title="还是解决不了？"></a>还是解决不了？</h1><p>费了九牛二虎之力还是没搞定，可能需要思考一下自己的目的，能否从其他途径解决，曲线救国的道理。</p>
+<p>或者，再仔细想一想，这个问题是不是真的有必要花这么多时间解决。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/12/31/2017summary/" rel="prev" title="2017年总结">
+      <i class="fa fa-chevron-left"></i> 2017年总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/02/24/vps/" rel="next" title="购买一台亚马逊EC2">
+      购买一台亚马逊EC2 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题是什么"><span class="nav-number">1.</span> <span class="nav-text">问题是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分解"><span class="nav-number">2.</span> <span class="nav-text">问题分解</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#是否是大众问题"><span class="nav-number">3.</span> <span class="nav-text">是否是大众问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#别人是否已经解决了相关问题"><span class="nav-number">4.</span> <span class="nav-text">别人是否已经解决了相关问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#别人的办法能否完全解决你的问题"><span class="nav-number">5.</span> <span class="nav-text">别人的办法能否完全解决你的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如果是小众问题呢"><span class="nav-number">6.</span> <span class="nav-text">如果是小众问题呢</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#对问题再抽象"><span class="nav-number">7.</span> <span class="nav-text">对问题再抽象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#还是解决不了？"><span class="nav-number">8.</span> <span class="nav-text">还是解决不了？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WangBooth</p>
+  <div class="site-description" itemprop="description">一个2B行业的2B程序员日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
