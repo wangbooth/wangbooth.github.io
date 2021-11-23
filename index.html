@@ -149,6 +149,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2021/11/23/gpg/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/11/23/gpg/" class="post-title-link" itemprop="url">Jar包GPG数字签名方法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-11-23 22:49:14 / Modified: 22:51:11" itemprop="dateCreated datePublished" datetime="2021-11-23T22:49:14+08:00">2021-11-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p>你有没有发现，从Maven仓库下载文件的时候，除了我们需要的jar包之外，还有个.asc文件，这个文件就是jar包的数字签名，咱可以通过这个数字签名来验证jar包是否确实是Oracle官方发布的包：<br><img src="mysql.png" alt></p>
+<p>对于我们的客户，生产环境上运行的程序，有些是从公司 gitlab-ci 上编译出来的，有些是开发者个人电脑上编译出来的，还有的是客户自己改代码后编译出来的，程序出问题后，到底是谁的责任呢？比如，<code>executor-proxy-provider.jar</code> 可以直接接触到客户生产环境的数据，万一这个文件被人恶意篡改，把客户数据删掉了，咋整…</p>
+<p>所以，咱也需要将公司对外的jar包做个签名，客户拿到jar包后，可以根据签名文件来确认是不是官方的包。</p>
+<h2 id="GPG签名原理"><a href="#GPG签名原理" class="headerlink" title="GPG签名原理"></a>GPG签名原理</h2><p>参考下这个链接：<a href="https://www.ruanyifeng.com/blog/2013/07/gpg.html" target="_blank" rel="noopener">https://www.ruanyifeng.com/blog/2013/07/gpg.html</a></p>
+<p>大体流程是：</p>
+<ol>
+<li>使用GPG生成一对密钥，公钥和私钥</li>
+<li>使用私钥对文件进行签名，并生成签名文件</li>
+<li>将文件、该文件对应的签名文件 以及 公钥，同时对外公布</li>
+<li>用户使用公钥和签名文件，对该文件进行签名验证</li>
+</ol>
+<h2 id="Maven使用GPG签名"><a href="#Maven使用GPG签名" class="headerlink" title="Maven使用GPG签名"></a>Maven使用GPG签名</h2><p>参考下官方链接：<a href="https://maven.apache.org/plugins/maven-gpg-plugin/usage.html" target="_blank" rel="noopener">https://maven.apache.org/plugins/maven-gpg-plugin/usage.html</a></p>
+<p>大体流程是：</p>
+<ol>
+<li><p>公司内部统一生成一对公钥和私钥文件：public.gpg 和 private.gpg；<br>私钥private.gpg将用于对发布包进行签名，所以必须由专人保管且只有公司统一的专用服务器可以使用（如gitlab-ci使用的容器），私人电脑不得使用该私钥对发布包进行签名；<br>公钥public.gpg将用于客户验证发布包的签名，需要与公钥本身的指纹(可通过gpg –fingerprint 生成)一同公开在公司官网；</p>
+</li>
+<li><p>在公司统一的专用打包服务器上通过gpg –import private.gpg来导入私钥；</p>
+</li>
+<li><p>在项目pom中添加maven-gpg-plugin插件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;project&gt;</span><br><span class="line">  ...</span><br><span class="line">  &lt;build&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">      &lt;plugin&gt;</span><br><span class="line">        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;maven-gpg-plugin&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;3.0.1&lt;/version&gt;</span><br><span class="line">        &lt;executions&gt;</span><br><span class="line">          &lt;execution&gt;</span><br><span class="line">            &lt;id&gt;sign-artifacts&lt;/id&gt;</span><br><span class="line">            &lt;phase&gt;verify&lt;/phase&gt;</span><br><span class="line">            &lt;goals&gt;</span><br><span class="line">              &lt;goal&gt;sign&lt;/goal&gt;</span><br><span class="line">            &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">        &lt;/executions&gt;</span><br><span class="line">      &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">  &lt;/build&gt;</span><br><span class="line">  ...</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在项目assembly中将maven-gpg-plugin插件生成的签名文件(.asc)包含进来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;fileSets&gt;</span><br><span class="line">...</span><br><span class="line">    &lt;fileSet&gt;</span><br><span class="line">        &lt;directory&gt;$&#123;project.parent.basedir&#125;/dubhe-server-provider/target&lt;/directory&gt;</span><br><span class="line">        &lt;outputDirectory&gt;$&#123;assembly.name&#125;/jars&lt;/outputDirectory&gt;</span><br><span class="line">        &lt;includes&gt;</span><br><span class="line">            &lt;include&gt;*.jar&lt;/include&gt;</span><br><span class="line">            &lt;include&gt;*.jar.asc&lt;/include&gt;</span><br><span class="line">        &lt;/includes&gt;</span><br><span class="line">    &lt;/fileSet&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;/fileSets&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 mvn verify进行打包，此时jar包对应的签名文件(.asc)会自动生成，与jar包在同一级目录下</p>
+</li>
+<li><p>客户(或者交付运维人员)在拿到部署包后，可通过以下步骤对jar包进行签名验证：<br> 7.1 从官网下载公钥文件public.gpg<br> 7.2 通过 <code>gpg --import public.gpg</code> 导入公钥<br> 7.3 通过 <code>gpg --fingerprint</code> 公钥ID 查看公钥指纹，确保该指纹与官网公布的公钥指纹一致<br> 7.4.通过 <code>gpg --verify dubhe-server-provider-4.3.1.jar.sig dubhe-server-provider-4.3.1.jar</code>来验证该文件签名是否是<code>Good signature</code></p>
+</li>
+<li><p>开发测试平时打包，可按原先流程通过<code>mvn package</code>打包发布测试环境，不会进行签名，当然，这种包也不能对外发布。</p>
+</li>
+</ol>
+<h2 id="gitlab-ci-配置"><a href="#gitlab-ci-配置" class="headerlink" title="gitlab-ci 配置"></a>gitlab-ci 配置</h2><p>gitlab上的ci使用了k8s来做runner，目前公司内部通用的ci脚本一般是<code>拉代码-打包-推送</code>这个过程，我们需要在打包过程中加入GPG签名步骤，ci需要改动的点如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">image: docker:git</span><br><span class="line">services:</span><br><span class="line">- docker:dind</span><br><span class="line"></span><br><span class="line">variables:</span><br><span class="line">  PROJECT_NAME: dubhe-node</span><br><span class="line">  DOCKER_DRIVER: overlay</span><br><span class="line"></span><br><span class="line">stages:</span><br><span class="line">- build</span><br><span class="line">- upload</span><br><span class="line"></span><br><span class="line">build:</span><br><span class="line">  image: docker.dtwave-inc.com/library/maven:3.5.4-jdk-8-gunpg-alpine</span><br><span class="line">  variables:</span><br><span class="line">    MAVEN_OPTS: &quot;-Dmaven.repo.local=/build-cache/.m2/repository&quot;</span><br><span class="line">  stage: build</span><br><span class="line">  script:</span><br><span class="line">  - gpg -v --batch --import &lt;(echo &quot;$GPG_PRIVATE_KEY&quot;)</span><br><span class="line">  - &quot;mvn clean verify -U -DskipTests -Dgpg.passphrase=$GPG_PRIVATE_KEY_PWD -DSHUXI_VERSION=$CI_COMMIT_TAG&quot;</span><br><span class="line">  - cp dist/$PROJECT_NAME*$CI_COMMIT_TAG.tgz /build-cache</span><br><span class="line">  only:</span><br><span class="line">  - tags</span><br><span class="line"></span><br><span class="line">upload:</span><br><span class="line">  image: docker.dtwave-inc.com/library/mc</span><br><span class="line">  stage: package</span><br><span class="line">  dependencies:</span><br><span class="line">  - build</span><br><span class="line"></span><br><span class="line">  script:</span><br><span class="line">  - mc mb dtwave-inc/shuxi-dev/backend/$&#123;PROJECT_NAME&#125;/$&#123;CI_COMMIT_TAG&#125;/</span><br><span class="line">  - mc cp /build-cache/$&#123;PROJECT_NAME&#125;*$&#123;CI_COMMIT_TAG&#125;.tgz dtwave-inc/shuxi-dev/backend/$&#123;PROJECT_NAME&#125;/$&#123;CI_COMMIT_TAG&#125;/</span><br><span class="line">  - rm -rf /build-cache/$&#123;PROJECT_NAME&#125;*$&#123;CI_COMMIT_TAG&#125;.tgz</span><br><span class="line">  only:</span><br><span class="line">    - tags</span><br></pre></td></tr></table></figure>
+<p>改动点1: </p>
+<p>Build时使用<code>maven:3.5.4-jdk-8-gunpg-alpine</code>镜像<br><code>maven:3.5.4-jdk-8-gunpg-alpine</code> 镜像比原先的 <code>maven:3.5.4-jdk-8-alpine</code>镜像多安装了一个<code>gunpg</code>，用于GPG签名。</p>
+<p>改动点2: </p>
+<p>Build时先通过gpg加载私钥<br><code>gpg -v --batch --import &lt;(echo &quot;$GPG_PRIVATE_KEY&quot;)</code><br>GPG私钥是保存在gitlab的环境变量<code>GPG_PRIVATE_KEY</code>中的，该变量只允许gitlab项目管理员或者分组管理员编辑。</p>
+<p>改动点3: </p>
+<p>使用<code>mvn verify</code>来打包<br><code>mvn clean verify -U -DskipTests -Dgpg.passphrase=$GPG_PRIVATE_KEY_PWD -DSHUXI_VERSION=$CI_COMMIT_TAG</code><br>原先使用<code>mvn install ...</code>改为<code>mvn verify ...</code>，同时传入变量<code>gpg.passphrase=$GPG_PRIVATE_KEY_PWD</code>，用于指定使用GPG私钥的密码，该密码是存放在gitlab的环境变量<code>GPG_PRIVATE_KEY_PWD</code> 中的，只允许gitlab项目管理员或者分组管理员编辑。</p>
+<h2 id="gitlab管理员配置"><a href="#gitlab管理员配置" class="headerlink" title="gitlab管理员配置"></a>gitlab管理员配置</h2><p>在项目配置或者分组配置下，设置变量：</p>
+<p><code>GPG_PRIVATE_KEY</code> 为GPG私钥，默认情况下，GPG私钥是以二进制方式存储的，可通过<code>gpg --armor --output private-key.txt --export-secret-keys</code>来生成ASCII码文本，然后将私钥文本填入该变量的值中。私钥务必保证其安全性，只有管理员可见。</p>
+<p><code>GPG_PRIVATE_KEY_PWD</code>为使用GPG私钥的密码，在生成GPG密钥对的时候设置的此密码，需将密码填入该变量中。为防止私钥被滥用，该密码也需保证安全性，只有管理员可见。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2021/11/22/strategy/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -174,7 +274,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-11-22 20:57:00 / Modified: 21:23:35" itemprop="dateCreated datePublished" datetime="2021-11-22T20:57:00+08:00">2021-11-22</time>
+              <time title="Created: 2021-11-22 20:57:00 / Modified: 21:25:46" itemprop="dateCreated datePublished" datetime="2021-11-22T20:57:00+08:00">2021-11-22</time>
             </span>
 
           
@@ -188,7 +288,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>今天读了吴军《硅谷来信》第三季第144封信，讲述了<strong>奥斯特里茨战争*和</strong>晋楚城濮之战**两个战争历史，获胜方都是在打仗之前就有了足够宏远的战略目标，以及非常明细的战略实施计划和Plan B，最终才得以取胜。</p>
+          <p>今天读了吴军《硅谷来信》第三季第144封信，讲述了<strong>奥斯特里茨战争</strong>和<strong>晋楚城濮之战</strong>两个战争历史，获胜方都是在打仗之前就有了足够宏远的战略目标，以及非常明细的战略实施计划和Plan B，最终才得以取胜。</p>
 <p>战略拆分为以下几要素：</p>
 <ul>
 <li>自己当前的位置</li>
@@ -199,7 +299,7 @@
 <p>对于前3点，我觉得自己在针对某些短期的小目标时，能提前清晰地规划出来，但最后一点「将来的愿景」我并没有切身体会过。常有的感觉是，某件事辛辛苦苦做了两个月终于做出来了，然后庆祝一下，然后就感觉很空虚，不知道该干嘛了，这应该就是没有设立更大的目标的缘故，不知道自己实现了当前的目标后该干什么了。</p>
 <p>为什么会这样呢？</p>
 <p>仔细回想一下，在设定一个短期目标的时候，一旦这个短期目标确定，我便会沉迷于筹划实现这个目标的细节中，然后仔细排出计划，经常是还没等计划通盘考虑完就马上动手实施了，最后常常是边实施变改计划，最终把目标实现，过程中还时不时熬夜干，把目标实现后，突然对未来就空白了。</p>
-<p>给自己定个5年的目标是不错，但这种目标常常是不清晰的，时刻需要微调的，而短期目标，应该是在这个模糊的长期目标的方向上的。所以我想，在定一个短期目标的时候，是不是可以把这个短期目标看成是自己长期模糊目标的一个步骤，强行给短期目标添加一个背景，然后逼着自己列一个更大的目标出来，最后分解成各个小目标落实。</p>
+<p>给自己定个5年的目标是不错，但这种目标常常是不清晰的，时刻需要微调的，而短期目标之所以能定出来，应该是在这个模糊的长期目标的方向上自己下意识想出来的。所以我想，在定一个短期目标的时候，是不是可以把这个短期目标看成是自己长期模糊目标的一个步骤，强行给短期目标添加一个背景，然后逼着自己列一个更大的目标出来，最后分解成各个小目标落实。</p>
 <p>试试看。</p>
 
       
@@ -823,92 +923,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WangBooth">
-      <meta itemprop="description" content="一个2B行业的2B程序员日常">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WangBooth's Logbook">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/22/java-OutOfMemoryError-4/" class="post-title-link" itemprop="url">OutOfMemoryError系列（4）: Metaspace 如何处理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-02-22 18:07:56 / Modified: 18:11:21" itemprop="dateCreated datePublished" datetime="2020-02-22T18:07:56+08:00">2020-02-22</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>JVM限制了Java程序的最大内存, 修改/指定启动参数可以改变这种限制。Java将堆内存划分为多个部分, 如下图所示:</p>
-<p><img src="20170922114246369.png" alt="04_01_OOM-example-metaspace.png"></p>
-<p>【Java8及以上】这些内存池的最大值, 由 <code>-Xmx</code> 和 <code>-XX:MaxMetaspaceSize</code> 等JVM启动参数指定. 如果没有明确指定, 则根据平台类型(OS版本+JVM版本)和物理内存的大小来确定。</p>
-<p><em>java.lang.OutOfMemoryError: Metaspace</em> 错误所表达的信息是: <strong>元数据区(Metaspace) 已被用满</strong></p>
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>如果你是Java老司机, 应该对 PermGen 比较熟悉. 但从Java 8开始,内存结构发生重大改变, 不再使用Permgen, 而是引入一个新的空间: Metaspace. 这种改变基于多方面的考虑, 部分原因列举如下:</p>
-<ul>
-<li>Permgen空间的具体多大很难预测。指定小了会造成 <a href="http://blog.csdn.net/renfufei/article/details/77994177" target="_blank" rel="noopener">java.lang.OutOfMemoryError: Permgen size</a> 错误, 设置多了又造成浪费。</li>
-<li>为了 <a href="http://blog.csdn.net/renfufei/article/details/61924893" target="_blank" rel="noopener">GC 性能</a> 的提升, 使得垃圾收集过程中的并发阶段不再 <a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">停顿</a>, 另外对 metadata 进行特定的遍历(specific iterators)。</li>
-<li>对 <a href="http://blog.csdn.net/renfufei/article/details/54885190#t9" target="_blank" rel="noopener">G1垃圾收集器</a> 的并发 class unloading 进行深度优化。</li>
-</ul>
-<p>在Java8中,将之前 PermGen 中的所有内容, 都移到了 Metaspace 空间。例如: class 名称, 字段, 方法, 字节码, 常量池, JIT优化代码, 等等。</p>
-<p>Metaspace 的使用量与JVM加载到内存中的 class 数量/大小有关。可以说, <strong><em>java.lang.OutOfMemoryError: Metaspace\</em> 错误的主要原因, 是加载到内存中的 class 数量太多或者体积太大</strong>。</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>和 PermGen 类似, Metaspace 空间的使用量, 与JVM加载的 class 数量有很大关系。下面是一个简单的示例:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Metaspace &#123;</span><br><span class="line">  static javassist.ClassPool cp = javassist.ClassPool.getDefault();</span><br><span class="line"></span><br><span class="line">  public static void main(String[] args) throws Exception&#123;</span><br><span class="line">    for (int i = 0; ; i++) &#123; </span><br><span class="line">      Class c = cp.makeClass(&quot;eu.plumbr.demo.Generated&quot; + i).toClass();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">12345678910</span><br></pre></td></tr></table></figure>
-<p>可以看到, 使用 <a href="http://www.csg.ci.i.u-tokyo.ac.jp/~chiba/javassist/" target="_blank" rel="noopener">javassist</a> 工具库生成 class 那是非常简单。在 for 循环中, 动态生成很多class, 最终将这些class加载到 Metaspace 中。</p>
-<p>执行这段代码, 随着生成的class越来越多, 最后将会占满 Metaspace 空间, 抛出 <em>java.lang.OutOfMemoryError: Metaspace</em>. 在Mac OS X上, Java 1.8.0_05 环境下, 如果设置了启动参数 <em>-XX:MaxMetaspaceSize=64m</em>, 大约加载 70000 个class后JVM就会挂掉。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>如果抛出与 Metaspace 有关的 OutOfMemoryError , 第一解决方案是增加 Metaspace 的大小. 使用下面这样的启动参数:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxMetaspaceSize=512m</span><br></pre></td></tr></table></figure>
-<p>这里将 Metaspace 的最大值设置为 512MB, 如果没有用完, 就不会抛出 <em>OutOfMemoryError</em>。</p>
-<p>有一种看起来很简单的方案, 是直接去掉 Metaspace 的大小限制。 但需要注意, 不限制Metaspace内存的大小, 假若物理内存不足, 有可能会引起内存交换(swapping), 严重拖累系统性能。 此外,还可能造成native内存分配失败等问题。</p>
-<blockquote>
-<p>在现代应用集群中,宁可让应用节点挂掉, 也不希望其响应缓慢。</p>
-</blockquote>
-<p>如果不想收到报警, 可以像鸵鸟一样, 把 <em>java.lang.OutOfMemoryError: Metaspace</em> 错误信息隐藏起来。 但这不能真正解决问题, 只会推迟问题爆发的时间。 如果确实存在内存泄露, 请参考前面的文章, 认真寻找解决方案。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -974,7 +992,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

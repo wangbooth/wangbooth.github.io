@@ -149,6 +149,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/02/22/java-OutOfMemoryError-4/" class="post-title-link" itemprop="url">OutOfMemoryError系列（4）: Metaspace 如何处理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-02-22 18:07:56 / Modified: 18:11:21" itemprop="dateCreated datePublished" datetime="2020-02-22T18:07:56+08:00">2020-02-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>JVM限制了Java程序的最大内存, 修改/指定启动参数可以改变这种限制。Java将堆内存划分为多个部分, 如下图所示:</p>
+<p><img src="20170922114246369.png" alt="04_01_OOM-example-metaspace.png"></p>
+<p>【Java8及以上】这些内存池的最大值, 由 <code>-Xmx</code> 和 <code>-XX:MaxMetaspaceSize</code> 等JVM启动参数指定. 如果没有明确指定, 则根据平台类型(OS版本+JVM版本)和物理内存的大小来确定。</p>
+<p><em>java.lang.OutOfMemoryError: Metaspace</em> 错误所表达的信息是: <strong>元数据区(Metaspace) 已被用满</strong></p>
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>如果你是Java老司机, 应该对 PermGen 比较熟悉. 但从Java 8开始,内存结构发生重大改变, 不再使用Permgen, 而是引入一个新的空间: Metaspace. 这种改变基于多方面的考虑, 部分原因列举如下:</p>
+<ul>
+<li>Permgen空间的具体多大很难预测。指定小了会造成 <a href="http://blog.csdn.net/renfufei/article/details/77994177" target="_blank" rel="noopener">java.lang.OutOfMemoryError: Permgen size</a> 错误, 设置多了又造成浪费。</li>
+<li>为了 <a href="http://blog.csdn.net/renfufei/article/details/61924893" target="_blank" rel="noopener">GC 性能</a> 的提升, 使得垃圾收集过程中的并发阶段不再 <a href="http://blog.csdn.net/renfufei/article/details/54885190" target="_blank" rel="noopener">停顿</a>, 另外对 metadata 进行特定的遍历(specific iterators)。</li>
+<li>对 <a href="http://blog.csdn.net/renfufei/article/details/54885190#t9" target="_blank" rel="noopener">G1垃圾收集器</a> 的并发 class unloading 进行深度优化。</li>
+</ul>
+<p>在Java8中,将之前 PermGen 中的所有内容, 都移到了 Metaspace 空间。例如: class 名称, 字段, 方法, 字节码, 常量池, JIT优化代码, 等等。</p>
+<p>Metaspace 的使用量与JVM加载到内存中的 class 数量/大小有关。可以说, <strong><em>java.lang.OutOfMemoryError: Metaspace\</em> 错误的主要原因, 是加载到内存中的 class 数量太多或者体积太大</strong>。</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>和 PermGen 类似, Metaspace 空间的使用量, 与JVM加载的 class 数量有很大关系。下面是一个简单的示例:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public class Metaspace &#123;</span><br><span class="line">  static javassist.ClassPool cp = javassist.ClassPool.getDefault();</span><br><span class="line"></span><br><span class="line">  public static void main(String[] args) throws Exception&#123;</span><br><span class="line">    for (int i = 0; ; i++) &#123; </span><br><span class="line">      Class c = cp.makeClass(&quot;eu.plumbr.demo.Generated&quot; + i).toClass();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">12345678910</span><br></pre></td></tr></table></figure>
+<p>可以看到, 使用 <a href="http://www.csg.ci.i.u-tokyo.ac.jp/~chiba/javassist/" target="_blank" rel="noopener">javassist</a> 工具库生成 class 那是非常简单。在 for 循环中, 动态生成很多class, 最终将这些class加载到 Metaspace 中。</p>
+<p>执行这段代码, 随着生成的class越来越多, 最后将会占满 Metaspace 空间, 抛出 <em>java.lang.OutOfMemoryError: Metaspace</em>. 在Mac OS X上, Java 1.8.0_05 环境下, 如果设置了启动参数 <em>-XX:MaxMetaspaceSize=64m</em>, 大约加载 70000 个class后JVM就会挂掉。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>如果抛出与 Metaspace 有关的 OutOfMemoryError , 第一解决方案是增加 Metaspace 的大小. 使用下面这样的启动参数:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:MaxMetaspaceSize=512m</span><br></pre></td></tr></table></figure>
+<p>这里将 Metaspace 的最大值设置为 512MB, 如果没有用完, 就不会抛出 <em>OutOfMemoryError</em>。</p>
+<p>有一种看起来很简单的方案, 是直接去掉 Metaspace 的大小限制。 但需要注意, 不限制Metaspace内存的大小, 假若物理内存不足, 有可能会引起内存交换(swapping), 严重拖累系统性能。 此外,还可能造成native内存分配失败等问题。</p>
+<blockquote>
+<p>在现代应用集群中,宁可让应用节点挂掉, 也不希望其响应缓慢。</p>
+</blockquote>
+<p>如果不想收到报警, 可以像鸵鸟一样, 把 <em>java.lang.OutOfMemoryError: Metaspace</em> 错误信息隐藏起来。 但这不能真正解决问题, 只会推迟问题爆发的时间。 如果确实存在内存泄露, 请参考前面的文章, 认真寻找解决方案。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2020/02/22/java-OutOfMemoryError-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1030,75 +1112,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2019/01/06/scp-error/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WangBooth">
-      <meta itemprop="description" content="一个2B行业的2B程序员日常">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WangBooth's Logbook">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/06/scp-error/" class="post-title-link" itemprop="url">scp传输文件时提示「xxx Is a directory」的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2019-01-06 23:49:35 / Modified: 23:59:56" itemprop="dateCreated datePublished" datetime="2019-01-06T23:49:35+08:00">2019-01-06</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>今天在从本地往服务器传文件时，出现了一个诡异的问题：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span> scp dist/test.tgz deploy@192.168.1.244:/opt/workspace/</span><br><span class="line"></span><br><span class="line">scp: /opt/workspace/: Is a directory</span><br></pre></td></tr></table></figure>
-<p>这个命令我几乎执行过上千次了，同样的源文件，同样的目标路径，咋这次就出错了呢？</p>
-<p>而且，目标服务器上 <code>/opt/workspace/</code> 这个目录，是一直都约定好的目录，一直都用的这个，而且确实是 <code>Is a directory</code>，这 <code>scp</code> 的错误信息，我有点懵逼。。</p>
-<p>于是登陆到远程服务器去看看，这个目录是咋回事，没权限了还是咋了？</p>
-<p>登陆上去后才发现，他娘的这个目录被人重命名了，成了 <code>/opt/workspace_4.3.0/</code>，这个时候才恍然大悟，原来 <code>scp</code> 的错误信息没毛病：我是在将一个文件传输到远程服务器，传输到远程服务器上后对应的是一个目录，所以<code>scp</code>不干了。</p>
-<p>不过，这种提示信息，我估计很多人都会懵逼，报错只报一半，不是个好的报错。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1164,7 +1181,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
