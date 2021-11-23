@@ -174,7 +174,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2021-11-23 22:49:14 / Modified: 22:51:11" itemprop="dateCreated datePublished" datetime="2021-11-23T22:49:14+08:00">2021-11-23</time>
+              <time title="Created: 2021-11-23 22:49:14 / Modified: 23:02:13" itemprop="dateCreated datePublished" datetime="2021-11-23T22:49:14+08:00">2021-11-23</time>
             </span>
 
           
@@ -188,7 +188,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p>你有没有发现，从Maven仓库下载文件的时候，除了我们需要的jar包之外，还有个.asc文件，这个文件就是jar包的数字签名，咱可以通过这个数字签名来验证jar包是否确实是Oracle官方发布的包：<br><img src="mysql.png" alt></p>
+          <h2 id="需求背景"><a href="#需求背景" class="headerlink" title="需求背景"></a>需求背景</h2><p><img src="mysql.png" alt></p>
+<p>你有没有发现，从Maven仓库下载文件的时候，除了我们需要的jar包之外，还有个.asc文件，这个文件就是jar包的数字签名，咱可以通过这个数字签名来验证jar包是否确实是Oracle官方发布的包：</p>
+<p><img src="gpg.png" alt></p>
 <p>对于我们的客户，生产环境上运行的程序，有些是从公司 gitlab-ci 上编译出来的，有些是开发者个人电脑上编译出来的，还有的是客户自己改代码后编译出来的，程序出问题后，到底是谁的责任呢？比如，<code>executor-proxy-provider.jar</code> 可以直接接触到客户生产环境的数据，万一这个文件被人恶意篡改，把客户数据删掉了，咋整…</p>
 <p>所以，咱也需要将公司对外的jar包做个签名，客户拿到jar包后，可以根据签名文件来确认是不是官方的包。</p>
 <h2 id="GPG签名原理"><a href="#GPG签名原理" class="headerlink" title="GPG签名原理"></a>GPG签名原理</h2><p>参考下这个链接：<a href="https://www.ruanyifeng.com/blog/2013/07/gpg.html" target="_blank" rel="noopener">https://www.ruanyifeng.com/blog/2013/07/gpg.html</a></p>
@@ -202,17 +204,17 @@
 <h2 id="Maven使用GPG签名"><a href="#Maven使用GPG签名" class="headerlink" title="Maven使用GPG签名"></a>Maven使用GPG签名</h2><p>参考下官方链接：<a href="https://maven.apache.org/plugins/maven-gpg-plugin/usage.html" target="_blank" rel="noopener">https://maven.apache.org/plugins/maven-gpg-plugin/usage.html</a></p>
 <p>大体流程是：</p>
 <ol>
-<li><p>公司内部统一生成一对公钥和私钥文件：public.gpg 和 private.gpg；<br>私钥private.gpg将用于对发布包进行签名，所以必须由专人保管且只有公司统一的专用服务器可以使用（如gitlab-ci使用的容器），私人电脑不得使用该私钥对发布包进行签名；<br>公钥public.gpg将用于客户验证发布包的签名，需要与公钥本身的指纹(可通过gpg –fingerprint 生成)一同公开在公司官网；</p>
+<li><p>公司内部统一生成一对公钥和私钥文件：<code>public.gpg</code> 和 <code>private.gpg</code>；<br><code>私钥private.gpg</code>将用于对发布包进行签名，所以必须由专人保管且只有公司统一的专用服务器可以使用（如gitlab-ci使用的容器），私人电脑不得使用该私钥对发布包进行签名；<br><code>公钥public.gpg</code>将用于客户验证发布包的签名，需要与公钥本身的指纹(可通过<code>gpg --fingerprint</code> 生成)一同公开在公司官网；</p>
 </li>
-<li><p>在公司统一的专用打包服务器上通过gpg –import private.gpg来导入私钥；</p>
+<li><p>在公司统一的专用打包服务器上通过<code>gpg --import private.gpg</code>来导入私钥；</p>
 </li>
-<li><p>在项目pom中添加maven-gpg-plugin插件</p>
+<li><p>在项目pom中添加<code>maven-gpg-plugin</code>插件</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;project&gt;</span><br><span class="line">  ...</span><br><span class="line">  &lt;build&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">      &lt;plugin&gt;</span><br><span class="line">        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;maven-gpg-plugin&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;3.0.1&lt;/version&gt;</span><br><span class="line">        &lt;executions&gt;</span><br><span class="line">          &lt;execution&gt;</span><br><span class="line">            &lt;id&gt;sign-artifacts&lt;/id&gt;</span><br><span class="line">            &lt;phase&gt;verify&lt;/phase&gt;</span><br><span class="line">            &lt;goals&gt;</span><br><span class="line">              &lt;goal&gt;sign&lt;/goal&gt;</span><br><span class="line">            &lt;/goals&gt;</span><br><span class="line">          &lt;/execution&gt;</span><br><span class="line">        &lt;/executions&gt;</span><br><span class="line">      &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">  &lt;/build&gt;</span><br><span class="line">  ...</span><br><span class="line">&lt;/project&gt;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>在项目assembly中将maven-gpg-plugin插件生成的签名文件(.asc)包含进来</p>
+<li><p>在项目assembly中将<code>maven-gpg-plugin</code>插件生成的签名文件(.asc)包含进来</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;fileSets&gt;</span><br><span class="line">...</span><br><span class="line">    &lt;fileSet&gt;</span><br><span class="line">        &lt;directory&gt;$&#123;project.parent.basedir&#125;/dubhe-server-provider/target&lt;/directory&gt;</span><br><span class="line">        &lt;outputDirectory&gt;$&#123;assembly.name&#125;/jars&lt;/outputDirectory&gt;</span><br><span class="line">        &lt;includes&gt;</span><br><span class="line">            &lt;include&gt;*.jar&lt;/include&gt;</span><br><span class="line">            &lt;include&gt;*.jar.asc&lt;/include&gt;</span><br><span class="line">        &lt;/includes&gt;</span><br><span class="line">    &lt;/fileSet&gt;</span><br><span class="line">    ...</span><br><span class="line">&lt;/fileSets&gt;</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>使用 mvn verify进行打包，此时jar包对应的签名文件(.asc)会自动生成，与jar包在同一级目录下</p>
+<li><p>使用 <code>mvn verify</code>进行打包，此时jar包对应的签名文件(.asc)会自动生成，与jar包在同一级目录下</p>
 </li>
 <li><p>客户(或者交付运维人员)在拿到部署包后，可通过以下步骤对jar包进行签名验证：<br> 7.1 从官网下载公钥文件public.gpg<br> 7.2 通过 <code>gpg --import public.gpg</code> 导入公钥<br> 7.3 通过 <code>gpg --fingerprint</code> 公钥ID 查看公钥指纹，确保该指纹与官网公布的公钥指纹一致<br> 7.4.通过 <code>gpg --verify dubhe-server-provider-4.3.1.jar.sig dubhe-server-provider-4.3.1.jar</code>来验证该文件签名是否是<code>Good signature</code></p>
 </li>
@@ -228,6 +230,7 @@
 <p>改动点3: </p>
 <p>使用<code>mvn verify</code>来打包<br><code>mvn clean verify -U -DskipTests -Dgpg.passphrase=$GPG_PRIVATE_KEY_PWD -DSHUXI_VERSION=$CI_COMMIT_TAG</code><br>原先使用<code>mvn install ...</code>改为<code>mvn verify ...</code>，同时传入变量<code>gpg.passphrase=$GPG_PRIVATE_KEY_PWD</code>，用于指定使用GPG私钥的密码，该密码是存放在gitlab的环境变量<code>GPG_PRIVATE_KEY_PWD</code> 中的，只允许gitlab项目管理员或者分组管理员编辑。</p>
 <h2 id="gitlab管理员配置"><a href="#gitlab管理员配置" class="headerlink" title="gitlab管理员配置"></a>gitlab管理员配置</h2><p>在项目配置或者分组配置下，设置变量：</p>
+<p><img src="gitlab.png" alt></p>
 <p><code>GPG_PRIVATE_KEY</code> 为GPG私钥，默认情况下，GPG私钥是以二进制方式存储的，可通过<code>gpg --armor --output private-key.txt --export-secret-keys</code>来生成ASCII码文本，然后将私钥文本填入该变量的值中。私钥务必保证其安全性，只有管理员可见。</p>
 <p><code>GPG_PRIVATE_KEY_PWD</code>为使用GPG私钥的密码，在生成GPG密钥对的时候设置的此密码，需将密码填入该变量中。为防止私钥被滥用，该密码也需保证安全性，只有管理员可见。</p>
 
