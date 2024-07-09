@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="环境描述某客户的生产环境，Redis 4.0.2 单机 问题现象客户生产环境服务器因过年停机，年后开机后，Redis 重启，Java 服务连接 Redis 提示某个 Key 在 Redis 里不存在。 问题分析Java 服务从 Redis 读 Key 读失败，说明服务本身是知道读哪个 Key 的，于是梳理了下问题的相关流程：   Java 服务实际提供了一个 SQL 类型的 API，可以将数据库里">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 数据丢失问题排查">
+<meta property="og:url" content="http://blog.wangbaomi.com/2022/02/15/redis-lost-data/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="环境描述某客户的生产环境，Redis 4.0.2 单机 问题现象客户生产环境服务器因过年停机，年后开机后，Redis 重启，Java 服务连接 Redis 提示某个 Key 在 Redis 里不存在。 问题分析Java 服务从 Redis 读 Key 读失败，说明服务本身是知道读哪个 Key 的，于是梳理了下问题的相关流程：   Java 服务实际提供了一个 SQL 类型的 API，可以将数据库里">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://blog.wangbaomi.com/2022/02/15/redis-lost-data/20220215113541.jpg">
+<meta property="og:updated_time" content="2022-02-15T03:36:37.816Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 数据丢失问题排查">
+<meta name="twitter:description" content="环境描述某客户的生产环境，Redis 4.0.2 单机 问题现象客户生产环境服务器因过年停机，年后开机后，Redis 重启，Java 服务连接 Redis 提示某个 Key 在 Redis 里不存在。 问题分析Java 服务从 Redis 读 Key 读失败，说明服务本身是知道读哪个 Key 的，于是梳理了下问题的相关流程：   Java 服务实际提供了一个 SQL 类型的 API，可以将数据库里">
+<meta name="twitter:image" content="http://blog.wangbaomi.com/2022/02/15/redis-lost-data/20220215113541.jpg">
+
+<link rel="canonical" href="http://blog.wangbaomi.com/2022/02/15/redis-lost-data/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Redis 数据丢失问题排查 | WangBooth's Logbook</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WangBooth's Logbook</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">王布斯的网络日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2022/02/15/redis-lost-data/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis 数据丢失问题排查
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-02-15 10:26:35 / Modified: 11:36:37" itemprop="dateCreated datePublished" datetime="2022-02-15T10:26:35+08:00">2022-02-15</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="环境描述"><a href="#环境描述" class="headerlink" title="环境描述"></a>环境描述</h1><p>某客户的生产环境，Redis 4.0.2 单机</p>
+<h1 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h1><p>客户生产环境服务器因过年停机，年后开机后，Redis 重启，Java 服务连接 Redis 提示某个 Key 在 Redis 里不存在。</p>
+<h1 id="问题分析"><a href="#问题分析" class="headerlink" title="问题分析"></a>问题分析</h1><p>Java 服务从 Redis 读 Key 读失败，说明服务本身是知道读哪个 Key 的，于是梳理了下问题的相关流程：</p>
+<p><img src="20220215113541.jpg" alt></p>
+<ol>
+<li>Java 服务实际提供了一个 SQL 类型的 API，可以将数据库里的数据通过 API 透出给其他应用程序</li>
+<li>当 HTTP 请求达到 Java 服务后，它会通过自身的业务库查询到当前 API 对应在 Redis 里的 Key</li>
+<li>通过 Key 去 Redis 里查到对应的数据库连接信息以及要执行的查询 SQL</li>
+<li>通过 JDBC 连接数据库，然后执行查询 SQL 查询数据，最后将数据返回给前台</li>
+</ol>
+<p>既然读 Key 失败，说明在 Java 服务自身的业务库里是保存了这个 Key 的，于是去 MySQL 中查询，果然存在这个 Key，而 Redis 里确实也不存在这个 Key，说明 Redis 重启后，这个 Key 确实丢了。</p>
+<p>继续分析，Java 程序在特定条件下会在 Redis 里写入这个 Key，而且 Redis 配置文件里配置了 SnapShot     的 save 机制：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">save 900 1</span><br><span class="line">save 300 10</span><br><span class="line">save 60 10000</span><br></pre></td></tr></table></figure>
+<p>这个 Key 是个很早就写入 Redis 的，按照第一条 save 规则，应该是已经从内存写入到 rdb 文件中了，那为什么 Redis 启动的时候没有读到这条数据呢？</p>
+<p>继续查看 Redis 配置文件，发现端倪：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># The working directory.</span><br><span class="line">#</span><br><span class="line"># The DB will be written inside this directory, with the filename specified</span><br><span class="line"># above using the &apos;dbfilename&apos; configuration directive.</span><br><span class="line">#</span><br><span class="line"># The Append Only File will also be created inside this directory.</span><br><span class="line">#</span><br><span class="line"># Note that you must specify a directory here, not a file name.</span><br><span class="line">dir ./</span><br></pre></td></tr></table></figure>
+<p>Redis 配置文件里，工作目录配置的是 <code>./</code> 这种相对路径，也就是说，启动 Redis 时，在哪个目录下运行启动命令，它就会在那个目录下找 rdb 文件并加载，如果目录下没有 rdb 文件，那 Redis 启动后就没有任何数据。</p>
+<p>于是排查了 Redis 目录，在 Redis 根目录下发现了一个 rdb 文件，在 src 目录下也有个 rdb 文件，而这次 Redis 启动是在根目录下启动的，上次是在 src 目录启动的，导致这次启动后无法加载上次的 rdb 文件，也就导致了 Key 丢失。</p>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><p>由于 Redis 被很多 Java 服务使用，不能随意重启，只好手动在 Redis 里将这个 Key-Value 写进去供程序使用；如果可以重启，只需更换启动目录，再重启下 Redis 就可以了。</p>
+<p>不过最好的方式，还是将配置文件中的工作目录 <code>dir</code> 设置成绝对路径，这样无论在哪里启动 Redis，都能读到同一份 rdb 文件。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>很多知识是书本上学不到的，只有从一次次生产事故中总结学习…</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/02/11/sanguo-01-01/" rel="prev" title="初读三国-01-宴桃园豪杰三结义，斩黄巾英雄首立功">
+      <i class="fa fa-chevron-left"></i> 初读三国-01-宴桃园豪杰三结义，斩黄巾英雄首立功
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/02/28/ngrok/" rel="next" title="ngrok搭建指南">
+      ngrok搭建指南 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#环境描述"><span class="nav-number">1.</span> <span class="nav-text">环境描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题现象"><span class="nav-number">2.</span> <span class="nav-text">问题现象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题分析"><span class="nav-number">3.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解决方案"><span class="nav-number">4.</span> <span class="nav-text">解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WangBooth</p>
+  <div class="site-description" itemprop="description">一个2B行业的2B程序员日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -149,160 +149,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2019/01/06/scp-error/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WangBooth">
-      <meta itemprop="description" content="一个2B行业的2B程序员日常">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WangBooth's Logbook">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/06/scp-error/" class="post-title-link" itemprop="url">scp传输文件时提示「xxx Is a directory」的问题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2019-01-06 23:49:35 / Modified: 23:59:56" itemprop="dateCreated datePublished" datetime="2019-01-06T23:49:35+08:00">2019-01-06</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>今天在从本地往服务器传文件时，出现了一个诡异的问题：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span> scp dist/test.tgz deploy@192.168.1.244:/opt/workspace/</span><br><span class="line"></span><br><span class="line">scp: /opt/workspace/: Is a directory</span><br></pre></td></tr></table></figure>
-<p>这个命令我几乎执行过上千次了，同样的源文件，同样的目标路径，咋这次就出错了呢？</p>
-<p>而且，目标服务器上 <code>/opt/workspace/</code> 这个目录，是一直都约定好的目录，一直都用的这个，而且确实是 <code>Is a directory</code>，这 <code>scp</code> 的错误信息，我有点懵逼。。</p>
-<p>于是登陆到远程服务器去看看，这个目录是咋回事，没权限了还是咋了？</p>
-<p>登陆上去后才发现，他娘的这个目录被人重命名了，成了 <code>/opt/workspace_4.3.0/</code>，这个时候才恍然大悟，原来 <code>scp</code> 的错误信息没毛病：我是在将一个文件传输到远程服务器，传输到远程服务器上后对应的是一个目录，所以<code>scp</code>不干了。</p>
-<p>不过，这种提示信息，我估计很多人都会懵逼，报错只报一半，不是个好的报错。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2019/01/06/2018summary/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="WangBooth">
-      <meta itemprop="description" content="一个2B行业的2B程序员日常">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="WangBooth's Logbook">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/06/2018summary/" class="post-title-link" itemprop="url">2018年总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2019-01-06 17:16:45 / Modified: 18:45:06" itemprop="dateCreated datePublished" datetime="2019-01-06T17:16:45+08:00">2019-01-06</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>2018年，过得真是太快了！</p>
-<p>想起过完农历年从老家回到杭州的前几天，都好像是不久前才发生的，中间几个月一下子只能回忆起不多的几件事了。</p>
-<p>2018年大部分时间都是花在工作上的，而且是我工作以来强度最大的一年，从4月中旬开始到年底，没有不加班的时候，而且经常是到晚上11点～凌晨1点之间才下班，好在身体还算可以，没有垮掉:)</p>
-<p>总结一下工作上的感受：</p>
-<ol>
-<li><p>数栖平台v3.0发布</p>
-<p>这个版本是我从4月份开始参与的，到6月20日（数澜2周年）的时候正式发布，产品上的价值自然不小，但对于团队来说，主要的收获其实是把测试同学的责任心建立起来了，人做事靠谱了，在整个研发部才能有一些存在感，有一定话语权。</p>
-</li>
-<li><p>测试团队负责人</p>
-<p>忘记是几月份了，上一个负责人离职，下一个负责人还没入职，于是我就成了测试团队的负责人。管理方面的技能我没有专门学过，所以操作上几乎都是模仿我之前公司的主管，遇到棘手的问题就及时变通处理，可能一些宏观上或者细节上的管理能力还没有，但我觉得当前这个阶段自己通过思考解决管理上的问题还算够用。</p>
-<p>这期间我也体会到不少难受的滋味，比如当我被怼的时候，就想到自己以前怼王维的时候，只有身在其位才能感受到有多难受。</p>
-</li>
-</ol>
-<p>相对来说，生活上投入的时间少了很多，但也有不少值得纪念的事儿：</p>
-<ol>
-<li><p>女儿出生</p>
-<p>从此就是3口之家了，多了一份责任，也添了不少乐趣。</p>
-<p>女儿刚出生时护士递到我怀里，不哭不闹，眼睛睁开看着我，小小的特别可爱，现在已经被老婆养成大胖妞了～～</p>
-</li>
-<li><p>车子</p>
-<p>本以为买辆车子没啥感觉，但买回来才发现，这东西你可以用，而且还得对它负责，上牌、年检、保养，是个持续的过程，需要花心思去做才行。元旦假期从杭州开回老家，之前错过的雪景，在高速上欣赏到了:)</p>
-<p>老婆怀孕的时候，去医院产检，打车很痛苦，尤其是冬天的时候，只有那会儿能体会到非有辆车不行，所以2018年就落实下来了。</p>
-</li>
-<li><p>身体</p>
-<p>10月份之前，体重还保持在65KG左右，10月份一个月，长了10斤多。老有人说加班会长胖，我不信，因为我之前也经常加班，没胖到哪里去；这次我大概懂得了，加班也分级别，10月份加班，有一段时间每天只能睡不到5个小时，没时间活动，而且为了能保持工作状态，得喝冰镇饮料才行，内分泌失调，容易饿，吃的多，排的少，体重自然就飙升了。</p>
-<p>身体的重要性在2019年会放到首位，一来，我已经处于「上有老下有小」的阶段了，这个阶段自己一定不能出问题；另外，在女儿刚出生那天，老婆在医院晕倒了，我居然扶不起来，特别无力。</p>
-</li>
-</ol>
-<p>回头看看年初立下的flag，该看的书没看，该写的博客没写，该学的技能也没学成～</p>
-<p>不过，有得有失，忙碌的一年，信心暴涨的一年！</p>
-<p>2019年，接着立flag～</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
     <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2018/03/27/ss/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1010,10 +856,74 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2017/12/06/save/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/12/06/save/" class="post-title-link" itemprop="url">养成保存的习惯</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2017-12-06 09:07:20 / Modified: 12:46:56" itemprop="dateCreated datePublished" datetime="2017-12-06T09:07:20+08:00">2017-12-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在PC上不论是写文档还是写代码，我都会时不时地按一下保存的快捷键<code>Ctrl+S</code>或者<code>Cmd+S</code>，这个习惯保证了我不论用多么盗版的软件，都不用担心软件崩溃或者突然断电带来的损失。</p>
+<p>上周末参加一个培训的时候，我只带了手机，会议过程中用「有道云笔记」来做记录，记满一屏后，我习惯性地考虑了下: 要不要保存一下呢？右上角有个保存按钮的。</p>
+<p>但是我没有保存，一来是因为这款软件保存一下后，必须再点击编辑按钮才能进入编辑模式；二来是我侥幸心理作祟，我认为手机又不会突然断电，软件也运行良好没有崩溃过…</p>
+<p>结果由于会议室手机信号不好，联通的信号时有时无，当联通信号由无变有时，系统弹出来一个类似「欢迎使用联通…」之类的弹框在屏幕顶部，我点击确定就关掉了这个弹框。谁知，笔记软件里的内容也随之清空了…我当时心里真是一万匹草泥马，后悔自己为啥就不去点一下保存呢…</p>
+<p>手机上的文档工具，由于没有像PC上那样很快捷的方式进行保存，所以能开自动保存的话一定要开自动保存，没有自动保存功能的就还是勤快一些的好～</p>
+<p>文档写在软件上，如果不保存，它就只是在计算机的内存里留着，内存虽然方便快捷，但不可靠，所以需要按下保存按钮将它存放到更可靠的硬盘里；我们大脑中有些想法，也需要定时保存下来——就是写出来，写到纸上，不然它也只是保存在我们大脑的「内存」区域，很容易忘记~_~</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
   </nav>
 
 
@@ -1079,7 +989,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">29</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1111,7 +1021,7 @@
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
