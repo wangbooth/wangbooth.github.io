@@ -17,106 +17,106 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"wangbooth.tech","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="Mysql题[toc] 一 Mysql索引001 Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 002 InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。  在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql">
-<meta property="og:url" content="http://blog.wangbaomi.com/2022/12/05/mysql/index.html">
+<meta property="og:url" content="https://wangbooth.tech/2022/12/05/mysql/index.html">
 <meta property="og:site_name" content="WangBooth&#39;s Logbook">
 <meta property="og:description" content="Mysql题[toc] 一 Mysql索引001 Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 002 InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。  在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709183820796.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709071051043.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709071958145.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709072138395.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709073749310.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709074801215.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/1557565-20220429110413866-1755798300.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709080648851.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709130937991.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709134109900-16668534893372.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709080648851.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709130937991.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220708235509010.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220708233351509.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220708235725124.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220708231622916.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20221027154142690.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20221027154120483.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709002223882.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709002554341.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709004531952.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712002627554.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20221028155608009.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/29f7e85dea17e100b38b450d9949a330.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220627113443003.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220702002430362.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/执行流程.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/b44f857a9bdedcd6a2d53a3971fae7db.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220703164220030.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220703170334348.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/16701032-f8547d110ba34135.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/2021110810071449.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/16701032-f8547d110ba34135.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/v2-a48d01fd3478ba4d68207fc7ce757658_r.jpg">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710101402666.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220711122444380.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710000757241.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710000950098.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220711123408605.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710001512891.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710001930811.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710002145309.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710002444782.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710002604613.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710003049587.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710110732730.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710153504037.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710153921679.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710155650935.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712065946659.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712065815768.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712065922882.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712070042666.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712070727963.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712070851089.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712070944090.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220711125730163.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712071057817.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712071138320.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220711132125501.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220711131831315.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710142152514.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710130548971.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709211819944.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710131916240.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709212722601.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709231638201.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709215122017.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710181100102.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710172607190.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710172926396.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712071716131.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712072055566.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710180257692.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220712012108900.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710182356817.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220710182524371.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20221106160437906.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/111.jpg">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/222.jpg">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/25723371_16499183725J8d.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20221106171251532.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20221106171945037.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709183820796.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709071051043.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709071958145.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709072138395.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709073749310.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709074801215.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/1557565-20220429110413866-1755798300.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709080648851.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709130937991.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709134109900-16668534893372.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709080648851.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709130937991.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220708235509010.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220708233351509.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220708235725124.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220708231622916.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20221027154142690.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20221027154120483.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709002223882.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709002554341.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709004531952.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712002627554.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20221028155608009.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/29f7e85dea17e100b38b450d9949a330.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220627113443003.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220702002430362.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/执行流程.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/b44f857a9bdedcd6a2d53a3971fae7db.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220703164220030.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220703170334348.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/16701032-f8547d110ba34135.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/2021110810071449.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/16701032-f8547d110ba34135.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/v2-a48d01fd3478ba4d68207fc7ce757658_r.jpg">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710101402666.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220711122444380.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710000757241.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710000950098.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220711123408605.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710001512891.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710001930811.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710002145309.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710002444782.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710002604613.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710003049587.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710110732730.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710153504037.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710153921679.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710155650935.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712065946659.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712065815768.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712065922882.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712070042666.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712070727963.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712070851089.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712070944090.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220711125730163.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712071057817.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712071138320.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220711132125501.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220711131831315.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710142152514.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710130548971.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709211819944.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710131916240.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709212722601.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709231638201.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709215122017.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710181100102.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710172607190.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710172926396.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712071716131.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712072055566.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710180257692.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220712012108900.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710182356817.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220710182524371.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20221106160437906.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/111.jpg">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/222.jpg">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/25723371_16499183725J8d.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20221106171251532.png">
+<meta property="og:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20221106171945037.png">
 <meta property="og:updated_time" content="2022-12-05T07:14:23.306Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql">
 <meta name="twitter:description" content="Mysql题[toc] 一 Mysql索引001 Mysql如何实现的索引机制？MySQL中索引分三类：B+树索引、Hash索引、全文索引 002 InnoDB索引与MyISAM索引实现的区别是什么？ MyISAM的索引方式都是非聚簇的，与InnoDB包含1个聚簇索引是不同的。  在InnoDB存储引擎中，我们只需要根据主键值对聚簇索引进行一次查找就能找到对应的记录，而在MyISAM中却需要进行一">
-<meta name="twitter:image" content="http://blog.wangbaomi.com/2022/12/05/mysql/image-20220709183820796.png">
+<meta name="twitter:image" content="https://wangbooth.tech/2022/12/05/mysql/image-20220709183820796.png">
 
-<link rel="canonical" href="http://blog.wangbaomi.com/2022/12/05/mysql/">
+<link rel="canonical" href="https://wangbooth.tech/2022/12/05/mysql/">
 
 
 <script id="page-configurations">
@@ -235,7 +235,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2022/12/05/mysql/">
+    <link itemprop="mainEntityOfPage" href="https://wangbooth.tech/2022/12/05/mysql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">

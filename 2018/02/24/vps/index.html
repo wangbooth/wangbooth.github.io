@@ -17,47 +17,47 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"wangbooth.tech","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="亚马逊EC2 可以简单理解为一台运行在云端的虚拟机(注1), 或者说是云服务器. 云服务器的优势很多(可以参考官方的介绍), 对于国内的个人用户来说, EC2 最大的优势可能是:  便宜(注册即可免费使用1年) 服务器在国外(可做代理访问被墙的国外网站)  云服务器提供商现在有很多, 国内的阿里云目前规模最大, 全球范围内目前亚马逊的规模最大.  拥有云服务器, 可以在上面运行自己的计算任务,">
 <meta name="keywords" content="vps">
 <meta property="og:type" content="article">
 <meta property="og:title" content="购买一台亚马逊EC2">
-<meta property="og:url" content="http://blog.wangbaomi.com/2018/02/24/vps/index.html">
+<meta property="og:url" content="https://wangbooth.tech/2018/02/24/vps/index.html">
 <meta property="og:site_name" content="WangBooth&#39;s Logbook">
 <meta property="og:description" content="亚马逊EC2 可以简单理解为一台运行在云端的虚拟机(注1), 或者说是云服务器. 云服务器的优势很多(可以参考官方的介绍), 对于国内的个人用户来说, EC2 最大的优势可能是:  便宜(注册即可免费使用1年) 服务器在国外(可做代理访问被墙的国外网站)  云服务器提供商现在有很多, 国内的阿里云目前规模最大, 全球范围内目前亚马逊的规模最大.  拥有云服务器, 可以在上面运行自己的计算任务,">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/ec2.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_1.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_2.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_4.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_5.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/taobao_1.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_6.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_7.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_8.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_9.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_10.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_12.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_13.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/aws_15.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_1.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_2.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_3.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_4.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_5.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_55.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/install_6.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/ssh_1.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2018/02/24/vps/ok.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/ec2.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_1.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_2.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_4.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_5.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/taobao_1.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_6.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_7.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_8.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_9.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_10.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_12.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_13.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/aws_15.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_1.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_2.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_3.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_4.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_5.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_55.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/install_6.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/ssh_1.png">
+<meta property="og:image" content="https://wangbooth.tech/2018/02/24/vps/ok.png">
 <meta property="og:updated_time" content="2018-02-25T07:29:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="购买一台亚马逊EC2">
 <meta name="twitter:description" content="亚马逊EC2 可以简单理解为一台运行在云端的虚拟机(注1), 或者说是云服务器. 云服务器的优势很多(可以参考官方的介绍), 对于国内的个人用户来说, EC2 最大的优势可能是:  便宜(注册即可免费使用1年) 服务器在国外(可做代理访问被墙的国外网站)  云服务器提供商现在有很多, 国内的阿里云目前规模最大, 全球范围内目前亚马逊的规模最大.  拥有云服务器, 可以在上面运行自己的计算任务,">
-<meta name="twitter:image" content="http://blog.wangbaomi.com/2018/02/24/vps/ec2.png">
+<meta name="twitter:image" content="https://wangbooth.tech/2018/02/24/vps/ec2.png">
 
-<link rel="canonical" href="http://blog.wangbaomi.com/2018/02/24/vps/">
+<link rel="canonical" href="https://wangbooth.tech/2018/02/24/vps/">
 
 
 <script id="page-configurations">
@@ -176,7 +176,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2018/02/24/vps/">
+    <link itemprop="mainEntityOfPage" href="https://wangbooth.tech/2018/02/24/vps/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">

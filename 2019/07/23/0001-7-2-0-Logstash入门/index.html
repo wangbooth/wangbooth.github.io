@@ -17,27 +17,27 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"wangbooth.tech","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="需求公司里目前各个服务部署在不同的服务器上，每个服务有自己的日志文件，日志缺乏统一查看的地方，平时看日志得去 SSH 到服务器上去才能看，不方便排查问题：  另外，有些服务器对不同岗位的人权限是分开的，比如测试服务器上，只有测试人员才能通过 SSH 登录到服务器，开发人员是没权限登录的，开发人员想查问题就得找测试人员去一个个要日志了，测试人员也得陪着开发去一个个找，大家都难受。 所以，就想着通过">
 <meta property="og:type" content="article">
 <meta property="og:title" content="0001-7.2.0-Logstash入门">
-<meta property="og:url" content="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/index.html">
+<meta property="og:url" content="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/index.html">
 <meta property="og:site_name" content="WangBooth&#39;s Logbook">
 <meta property="og:description" content="需求公司里目前各个服务部署在不同的服务器上，每个服务有自己的日志文件，日志缺乏统一查看的地方，平时看日志得去 SSH 到服务器上去才能看，不方便排查问题：  另外，有些服务器对不同岗位的人权限是分开的，比如测试服务器上，只有测试人员才能通过 SSH 登录到服务器，开发人员是没权限登录的，开发人员想查问题就得找测试人员去一个个要日志了，测试人员也得陪着开发去一个个找，大家都难受。 所以，就想着通过">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/basic_logstash_pipeline.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/image_1.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/image_2.png">
-<meta property="og:image" content="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/image_3.png">
+<meta property="og:image" content="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/basic_logstash_pipeline.png">
+<meta property="og:image" content="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/image_1.png">
+<meta property="og:image" content="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/image_2.png">
+<meta property="og:image" content="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/image_3.png">
 <meta property="og:updated_time" content="2019-07-31T11:21:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="0001-7.2.0-Logstash入门">
 <meta name="twitter:description" content="需求公司里目前各个服务部署在不同的服务器上，每个服务有自己的日志文件，日志缺乏统一查看的地方，平时看日志得去 SSH 到服务器上去才能看，不方便排查问题：  另外，有些服务器对不同岗位的人权限是分开的，比如测试服务器上，只有测试人员才能通过 SSH 登录到服务器，开发人员是没权限登录的，开发人员想查问题就得找测试人员去一个个要日志了，测试人员也得陪着开发去一个个找，大家都难受。 所以，就想着通过">
-<meta name="twitter:image" content="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/basic_logstash_pipeline.png">
+<meta name="twitter:image" content="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/basic_logstash_pipeline.png">
 
-<link rel="canonical" href="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/">
+<link rel="canonical" href="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/">
 
 
 <script id="page-configurations">
@@ -156,7 +156,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2019/07/23/0001-7-2-0-Logstash入门/">
+    <link itemprop="mainEntityOfPage" href="https://wangbooth.tech/2019/07/23/0001-7-2-0-Logstash入门/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">

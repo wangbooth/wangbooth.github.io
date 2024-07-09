@@ -17,24 +17,24 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"blog.wangbaomi.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"wangbooth.tech","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="ToB 的企业往往会有 私有化交付 的需求，也就是将企业内部的应用打包部署到客户的服务器上使用。最近在交付过程中遇到 传包 的问题，由于客户方的服务器不是随便能传文件的，必须经过一级一级领导审批才行，而且过程中对传入服务器的文件大小还有限制，整个流程大致是：  而我们当前的 jar 包又特别大，一个大的可能有几百兆，往客户服务器上传文件比较坎坷，客户也经常抱怨：不是说就改几行代码么，干嘛传这么大的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="jar包打补丁方法">
-<meta property="og:url" content="http://blog.wangbaomi.com/2019/07/26/jar-patch/index.html">
+<meta property="og:url" content="https://wangbooth.tech/2019/07/26/jar-patch/index.html">
 <meta property="og:site_name" content="WangBooth&#39;s Logbook">
 <meta property="og:description" content="ToB 的企业往往会有 私有化交付 的需求，也就是将企业内部的应用打包部署到客户的服务器上使用。最近在交付过程中遇到 传包 的问题，由于客户方的服务器不是随便能传文件的，必须经过一级一级领导审批才行，而且过程中对传入服务器的文件大小还有限制，整个流程大致是：  而我们当前的 jar 包又特别大，一个大的可能有几百兆，往客户服务器上传文件比较坎坷，客户也经常抱怨：不是说就改几行代码么，干嘛传这么大的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://blog.wangbaomi.com/2019/07/26/jar-patch/image_1.png">
+<meta property="og:image" content="https://wangbooth.tech/2019/07/26/jar-patch/image_1.png">
 <meta property="og:updated_time" content="2020-02-22T08:28:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jar包打补丁方法">
 <meta name="twitter:description" content="ToB 的企业往往会有 私有化交付 的需求，也就是将企业内部的应用打包部署到客户的服务器上使用。最近在交付过程中遇到 传包 的问题，由于客户方的服务器不是随便能传文件的，必须经过一级一级领导审批才行，而且过程中对传入服务器的文件大小还有限制，整个流程大致是：  而我们当前的 jar 包又特别大，一个大的可能有几百兆，往客户服务器上传文件比较坎坷，客户也经常抱怨：不是说就改几行代码么，干嘛传这么大的">
-<meta name="twitter:image" content="http://blog.wangbaomi.com/2019/07/26/jar-patch/image_1.png">
+<meta name="twitter:image" content="https://wangbooth.tech/2019/07/26/jar-patch/image_1.png">
 
-<link rel="canonical" href="http://blog.wangbaomi.com/2019/07/26/jar-patch/">
+<link rel="canonical" href="https://wangbooth.tech/2019/07/26/jar-patch/">
 
 
 <script id="page-configurations">
@@ -153,7 +153,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
-    <link itemprop="mainEntityOfPage" href="http://blog.wangbaomi.com/2019/07/26/jar-patch/">
+    <link itemprop="mainEntityOfPage" href="https://wangbooth.tech/2019/07/26/jar-patch/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
