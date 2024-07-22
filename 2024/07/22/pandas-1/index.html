@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"wangbooth.tech","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Pandas Dataframe 内存占用一个 n 行 m 列的 DataFrame，如果不指定列的数据类型，pandas 会默认使用 object 类型，并使用 None 填充数据，None 本身占用16个字节，外加8个字节的引用计数，和8个字节的类型指针，一个数据需要占用32个字节，总共占用 32*n*m 字节。 所以，如果不指定数据类型，DataFrame 的内存占用会非常大。 内存优化如果">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pandas 初体验 -  Dataframe 如何节省内存">
+<meta property="og:url" content="https://wangbooth.tech/2024/07/22/pandas-1/index.html">
+<meta property="og:site_name" content="WangBooth&#39;s Logbook">
+<meta property="og:description" content="Pandas Dataframe 内存占用一个 n 行 m 列的 DataFrame，如果不指定列的数据类型，pandas 会默认使用 object 类型，并使用 None 填充数据，None 本身占用16个字节，外加8个字节的引用计数，和8个字节的类型指针，一个数据需要占用32个字节，总共占用 32*n*m 字节。 所以，如果不指定数据类型，DataFrame 的内存占用会非常大。 内存优化如果">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2024-07-22T13:59:15.882Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Pandas 初体验 -  Dataframe 如何节省内存">
+<meta name="twitter:description" content="Pandas Dataframe 内存占用一个 n 行 m 列的 DataFrame，如果不指定列的数据类型，pandas 会默认使用 object 类型，并使用 None 填充数据，None 本身占用16个字节，外加8个字节的引用计数，和8个字节的类型指针，一个数据需要占用32个字节，总共占用 32*n*m 字节。 所以，如果不指定数据类型，DataFrame 的内存占用会非常大。 内存优化如果">
+
+<link rel="canonical" href="https://wangbooth.tech/2024/07/22/pandas-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Pandas 初体验 -  Dataframe 如何节省内存 | WangBooth's Logbook</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">WangBooth's Logbook</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">王布斯的网络日志</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://wangbooth.tech/2024/07/22/pandas-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="WangBooth">
+      <meta itemprop="description" content="一个2B行业的2B程序员日常">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="WangBooth's Logbook">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Pandas 初体验 -  Dataframe 如何节省内存
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-07-22 21:29:54 / Modified: 21:59:15" itemprop="dateCreated datePublished" datetime="2024-07-22T21:29:54+08:00">2024-07-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Pandas-Dataframe-内存占用"><a href="#Pandas-Dataframe-内存占用" class="headerlink" title="Pandas Dataframe 内存占用"></a>Pandas Dataframe 内存占用</h2><p>一个 n 行 m 列的 DataFrame，如果不指定列的数据类型，pandas 会默认使用 object 类型，并使用 None 填充数据，None 本身占用16个字节，外加8个字节的引用计数，和8个字节的类型指针，一个数据需要占用32个字节，总共占用 <code>32*n*m</code> 字节。</p>
+<p>所以，如果不指定数据类型，DataFrame 的内存占用会非常大。</p>
+<h2 id="内存优化"><a href="#内存优化" class="headerlink" title="内存优化"></a>内存优化</h2><p>如果知道数据的类型，可以在创建 DataFrame 时指定数据类型，可以减少内存占用。</p>
+<p>对于字符串类型，会按照字符串本身的长度，占用不同的大小。</p>
+<p>占用内存最小的是 int8 类型，占用 1 个字节。</p>
+<h2 id="category-类型"><a href="#category-类型" class="headerlink" title="category 类型"></a>category 类型</h2><p>对于分类数据，可以使用 category 类型，相比直接存储字符串，会节省更多内存。</p>
+<blockquote>
+<p>在 pandas 中，使用 category 数据类型可以节省内存的主要原因是它使用整数编码来代表数据中的类别，而不是直接存储字符串或其他数据类型。这种方法在处理包含重复值多的离散数据时尤其有效。以下是详细解释：</p>
+<ol>
+<li>整数编码<br>category 类型背后的核心是，它将每一个唯一的类别映射到一个整数值。这种映射是内部进行的，对用户透明。例如，如果你有一个列，包含数千次重复的几个字符串值（如状态名称、产品类别等），使用 category 类型存储时，每个唯一的字符串值都被映射到一个唯一的整数编码。这些整数编码通常占用的空间远小于原始字符串。</li>
+<li>内存使用<br>字符串存储：在默认情况下，字符串通常存储为 object 类型，这意味着 pandas 在底层使用 Python 字符串对象来存储每个值。Python 的字符串对象是相对昂贵的，因为除了字符串内容本身，每个对象还需要额外的内存来存储对象管理的开销。<br>整数存储：相比之下，整数占用的内存较少，通常是固定的（例如 int8 类型占用 1 字节，int16 类型占用 2 字节等），并且不需要额外的管理开销。</li>
+<li>查找效率和存储优化<br>使用 category 类型时，pandas 只需要在内部维护一个唯一类别的列表，所有的操作（如排序、分组）都可以通过操作整数索引来进行，这不仅提高了处理速度，还减少了内存占用。此外，对于有限的唯一值集，整数映射比存储大量重复的字符串要高效得多。</li>
+</ol>
+</blockquote>
+<h2 id="实际场景"><a href="#实际场景" class="headerlink" title="实际场景"></a>实际场景</h2><p>在「AI筛词」工具开发过程中，有以下场景：</p>
+<p>n 个关键词，m1 个一级分类，每个一级分类下包含 m2 的二级分类。</p>
+<p>关键词为字符串类型，一个关键词平均占用100字节；二级分类为字符串，一个二级分类平均占用30个字节。</p>
+<h3 id="分类平铺"><a href="#分类平铺" class="headerlink" title="分类平铺"></a>分类平铺</h3><p>分类平铺，表示将所有二级分类都展开成为一级分类，总共会有 <code>m1*m2</code> 列，每一列使用 0 或 1 表示是否属于该分类。</p>
+<table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>一级分类1-二级分类1</th>
+<th>一级分类1-二级分类2</th>
+<th>一级分类2-二级分类1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关键词1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>如果使用分类平铺的方式，则一共有<code>m1*m2 + 1</code> 个列，除了关键词列，其他列都是 int8 类型，关键词列是字符串类型，占用内存为：</p>
+<p><code>100*n + m1*m2*1</code></p>
+<h3 id="分类嵌套"><a href="#分类嵌套" class="headerlink" title="分类嵌套"></a>分类嵌套</h3><p>分类嵌套，表示将二级分类嵌套在一级分类下，总共会有 <code>m1 + 1</code> 列，每一列使用 0 或 1 表示是否属于该分类。</p>
+<table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>一级分类1</th>
+<th>一级分类2</th>
+<th>一级分类3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关键词1</td>
+<td>二级分类1</td>
+<td>二级分类2</td>
+<td>二级分类1</td>
+</tr>
+</tbody>
+</table>
+<p>如果使用分类嵌套的方式，则一共有 <code>m1 + 1</code> 个列，除了关键词列，其他列都是 字符串类型，关键词列是字符串类型，占用内存为：</p>
+<p><code>100*n + m1*30</code></p>
+<h3 id="使用-category-类型"><a href="#使用-category-类型" class="headerlink" title="使用 category 类型"></a>使用 category 类型</h3><p>基于 分类嵌套 的方式，设置每个一级分类的列为 category 类型，占用内存为：</p>
+<p><code>100*n + m1*1</code></p>
+<blockquote>
+<p>这里忽略了Index的内存占用。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/10/30/baichuanai/" rel="prev" title="baichuanai">
+      <i class="fa fa-chevron-left"></i> baichuanai
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pandas-Dataframe-内存占用"><span class="nav-number">1.</span> <span class="nav-text">Pandas Dataframe 内存占用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存优化"><span class="nav-number">2.</span> <span class="nav-text">内存优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#category-类型"><span class="nav-number">3.</span> <span class="nav-text">category 类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际场景"><span class="nav-number">4.</span> <span class="nav-text">实际场景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分类平铺"><span class="nav-number">4.1.</span> <span class="nav-text">分类平铺</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分类嵌套"><span class="nav-number">4.2.</span> <span class="nav-text">分类嵌套</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-category-类型"><span class="nav-number">4.3.</span> <span class="nav-text">使用 category 类型</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">WangBooth</p>
+  <div class="site-description" itemprop="description">一个2B行业的2B程序员日常</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">WangBooth</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
